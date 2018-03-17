@@ -1,0 +1,21 @@
+$headerHeight: 4rem;
+$menuWidth: 4rem;
+$bg: #f5f6f8;
+$active: #fd7991;
+$main: rgba(53, 152, 219, 0.8);
+
+@mixin fixedTopInFullPage() {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+@mixin centerEntirely() {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}

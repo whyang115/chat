@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "graduation project for 2018 server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "koa",
+    "socketio",
+    "graduation",
+    "chat"
+  ],
+  "author": "whyang115@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.5.0",
+    "koa-body": "^2.5.0",
+    "koa-router": "^7.4.0",
+    "mongoose": "^5.0.10",
+    "socket.io": "^2.0.4"
+  }
+}
