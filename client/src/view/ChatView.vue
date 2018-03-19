@@ -6,7 +6,6 @@
 			<chat-side></chat-side>
 			<chat-content></chat-content>
 		</section>
-		
   </div>
 </template>
 
@@ -28,12 +27,14 @@ export default {
 .chat-view {
   height: 100%;
   background-color: $bg;
+  overflow: hidden;
 }
 .chat-box {
-  margin: $headerHeight 3rem 0 $menuWidth;
+  margin: 5rem 3rem 0 3rem;
+  padding-top: 1rem;
   display: flex;
   justify-content: space-around;
-  height: 100%;
+  height: 85%;
 }
 </style>
 

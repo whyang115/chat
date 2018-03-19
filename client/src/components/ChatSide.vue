@@ -15,6 +15,7 @@ export default {
 .chat-side {
   flex: 1;
   margin: 0 3rem;
+  background-color: #fff;
 }
 </style>
 
