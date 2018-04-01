@@ -11,8 +11,9 @@ export default {
   data() {
     return {
       iconList: [
-        { id: "person-stalker", isActive: true },
-        { id: "chatboxes", isActive: false }
+        { id: "chatboxes", isActive: true },
+        { id: "person-stalker", isActive: false },
+        { id: "gear-b", isActive: false }
       ]
     };
   },

@@ -116,6 +116,10 @@ export default {
     top: 12px;
     right: 6%;
     font-size: 1.5rem;
+    cursor: pointer;
+    &:hover {
+      color: $main;
+    }
   }
   input {
     width: 100%;
