@@ -1,5 +1,6 @@
 const Koa = require("koa");
 const app = new Koa();
+const cor = require("./common/cor");
 const server = require("http").Server(app.callback());
 const io = require("socket.io")(server);
 const initDatabase = require("./common/initDatabase.js");
@@ -9,7 +10,11 @@ const router = require("./route/router.js");
 initDatabase();
 
 // 挂载路由
-app.use(router.routes()).use(router.allowedMethods());
+console.log(cor);
+app
+  .use(cor)
+  .use(router.routes())
+  .use(router.allowedMethods());
 
 io.on("connection", socket => {
   socket.emit("chat", { hello: "world" });

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 module.exports = () => {
-  mongoose.connect("mongodb://localhost/graduation");
+  mongoose.connect("mongodb://localhost/chat");
 
   const db = mongoose.connection;
 

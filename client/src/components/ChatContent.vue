@@ -3,10 +3,10 @@
     <section class="chat-room">
       <h3>{{chatTitle}}</h3>
       <ul>
-        <li 
-          v-for="(chat,index) in chatList" 
-          :key="index" 
-          :class="chat.belong">    
+        <li
+          v-for="(chat,index) in chatList"
+          :key="index"
+          :class="chat.belong">
           <Avatar :src="chat.avatar"/>
           <p :class="chat.belong">{{chat.content}}</p>
         </li>
@@ -17,7 +17,7 @@
         <Icon type="android-send" class="icon-send" @click.native="sendChat"></Icon>
       </Form>
     </section>
-    
+
   </section>
 </template>
 
@@ -51,7 +51,6 @@ export default {
   },
   methods: {
     sendChat() {
-      console.log(this);
       if (!this.sendContent) {
         alert("内容不能为空");
       }

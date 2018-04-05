@@ -7,7 +7,7 @@
       <FormItem prop="user">
         <Input type="text" v-model="form.user" placeholder="用户名">
           <Icon type="person" slot="prepend"/>
-        </Input>       
+        </Input>
       </FormItem>
       <FormItem prop="pwd">
         <Input type="password" v-model="form.pwd" placeholder="请输入密码" >
@@ -16,6 +16,9 @@
       </FormItem>
       <FormItem>
         <Button type="primary" long @click="login('form')">登录</Button>
+      </FormItem>
+      <FormItem>
+         <Button long @click="register">没有账号? 去注册</Button>
       </FormItem>
     </Form>
   </div>
@@ -60,16 +63,23 @@ export default {
   },
   methods: {
     login(name) {
+      console.log(this);
       this.$refs[name].validate(valid => {
         if (valid) {
           this.$Message.success("success");
+          console.log(this);
+          this.$store.dispatch("register", {
+            name: this.form.user,
+            pwd: this.form.pwd
+          });
           this.$router.push("chat");
         } else {
           this.$Message.error("fail");
         }
       });
-      console.log(this.$refs);
-      console.log(this.form.user, this.form.pwd);
+    },
+    register() {
+      this.$router.push("/register");
     }
   },
   destroyed() {
