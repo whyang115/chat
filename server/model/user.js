@@ -6,6 +6,9 @@ const Schema = mongoose.Schema;
  *  名称
  *  密码
  *  注册日期
+ *  好友
+ *  头像
+ *  性别
  */
 const UserSchema = new Schema({
   name: {
@@ -17,9 +20,22 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  time: {
+  registerTime: {
+    type: Date,
+    required: false
+  },
+  lastLoginTime: {
     type: Date,
     required: true
+  },
+  friendList: {
+    type: Array
+  },
+  avatar: {
+    type: String
+  },
+  gender: {
+    type: String
   }
 });
 
