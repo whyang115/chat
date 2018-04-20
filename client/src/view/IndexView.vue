@@ -75,7 +75,7 @@ export default {
         if (valid) {
           let { name, pwd } = this[ref];
           this.axios
-            .post(`http://localhost:1105/api/${this.view}`, {
+            .post(`/api/${this.view}`, {
               name,
               pwd,
               time: Date.now()

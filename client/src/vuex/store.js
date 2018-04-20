@@ -1,25 +1,25 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import axios from "axios";
 Vue.use(Vuex);
-axios.defaults.headers.post["Content-Type"] = "text/plain";
+const socket = io.connect("http://localhost:1105");
+socket.on("chat", data => {
+  console.log(store);
+  console.log(data);
+});
 const store = new Vuex.Store({
   state: {
-    user: {
-      name: "",
-      pwd: "",
-      status: ""
+    userId: "",
+    chatList: [],
+    msgList: []
+  },
+  mutations: {
+    loginSuccess(state, { id }) {
+      state.userId = id;
     }
   },
   actions: {
-    register({ commit }, { name, pwd }) {
-      axios
-        .post({
-          url: "http://localhost:1105/api/register",
-          data: { name, pwd }
-        })
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
+    sendChat({ commit }, { chatContent }) {
+      socket.emit("chat", { chatContent });
     }
   }
 });
