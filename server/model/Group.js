@@ -1,5 +1,5 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 /**
  * 聊天组描述
@@ -8,18 +8,26 @@ const Schema = mongoose.Schema
  *   消息列表
  */
 const GroupSchema = new Schema({
+  groupName: {
+    type: String,
+    default: "一个聊天室"
+  },
+  avatar: {
+    type: String,
+    default: "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-1/54370195.jpg"
+  },
   createTime: {
     type: Date,
-    required: true
+    default: new Date().toLocaleString()
   },
   members: {
     type: Array,
-    required: true
+    default: []
   },
   messageList: {
     type: Array,
-    required: true
+    default: []
   }
-})
+});
 
-module.exports = mongoose.model("Group", GroupSchema)
+module.exports = mongoose.model("Group", GroupSchema);
