@@ -1,27 +1,45 @@
 import Vue from "vue";
 import Vuex from "vuex";
 Vue.use(Vuex);
-const socket = io.connect("http://localhost:1105");
-socket.on("chat", data => {
-  console.log(store);
-  console.log(data);
-});
+const socket = window.io.connect("http://localhost:1105");
 const store = new Vuex.Store({
   state: {
-    userId: "",
+    user: { userId: "", name: "", avatar: "" },
+    commonGroupId: "",
+    currentChat: {
+      type: "",
+      id: ""
+    },
     chatList: [],
     msgList: []
   },
   mutations: {
-    loginSuccess(state, { id }) {
-      state.userId = id;
+    loginSuccess(state, { userId, avatar, name, commonGroupId }) {
+      state.user = {
+        userId,
+        name,
+        avatar
+      };
+      state.commonGroupId = commonGroupId;
+      state.currentChat = {
+        type: "group",
+        id: commonGroupId
+      };
     }
   },
   actions: {
-    sendChat({ commit }, { chatContent }) {
-      socket.emit("chat", { chatContent });
+    sendChat({ commit }, { message }) {
+      console.log(this.state.user.userId);
+      socket.emit("chat", {
+        message,
+        ...this.state.user,
+        sendTime: new Date().toLocaleString()
+      });
     }
   }
+});
+socket.on("chat", data => {
+  store.state.msgList.push(data);
 });
 
 export default store;
