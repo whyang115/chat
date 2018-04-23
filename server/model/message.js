@@ -1,5 +1,5 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 /**
  * 信息描述
@@ -29,6 +29,6 @@ const MessageSchema = new Schema({
   isRead: {
     type: Boolean
   }
-})
-
-module.exports = mongoose.model("Message", MessageSchema)
+});
+const model = mongoose.model("Message", MessageSchema);
+module.exports = model;

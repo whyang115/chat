@@ -32,11 +32,14 @@ const UserSchema = new Schema({
     type: Array
   },
   avatar: {
-    type: String
+    type: String,
+    default:
+      "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-21/93951459.jpg"
   },
   gender: {
-    type: String
+    type: String,
+    default: "未知"
   }
 });
-
-module.exports = mongoose.model("User", UserSchema);
+const model = mongoose.model("User", UserSchema);
+module.exports = model;

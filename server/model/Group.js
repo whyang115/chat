@@ -8,7 +8,7 @@ const Schema = mongoose.Schema;
  *   消息列表
  */
 const GroupSchema = new Schema({
-  groupName: {
+  name: {
     type: String,
     default: "一个聊天室"
   },
@@ -29,5 +29,5 @@ const GroupSchema = new Schema({
     default: []
   }
 });
-
-module.exports = mongoose.model("Group", GroupSchema);
+const model = mongoose.model("Group", GroupSchema);
+module.exports = model;
