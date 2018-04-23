@@ -7,6 +7,10 @@ module.exports = {
     returnCode: 0,
     returnMessage: "user is been existed"
   },
+  userUnExist: {
+    returnCode: 0,
+    returnMessage: "user is unExist, please register first"
+  },
   databaseError: {
     returnCode: 0,
     returnMessage: "database unexpected error"

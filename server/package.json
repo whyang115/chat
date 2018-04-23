@@ -17,8 +17,9 @@
   "dependencies": {
     "koa": "^2.5.0",
     "koa-body": "^2.5.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-cors": "^0.0.16",
     "koa-router": "^7.4.0",
-    "koa2-cors": "^2.0.5",
     "mongoose": "^5.0.10",
     "socket.io": "^2.0.4"
   }

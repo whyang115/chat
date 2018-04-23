@@ -5,10 +5,12 @@ import App from "./App";
 import router from "./router";
 import store from "./vuex/store";
 import iView from "iview";
+import axios from "axios"
+import VueAxios from "vue-axios"
 import "iview/dist/styles/iview.css";
 
 Vue.use(iView);
-
+Vue.use(VueAxios, axios)
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
