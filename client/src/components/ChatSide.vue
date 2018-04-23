@@ -37,6 +37,7 @@ export default {
     };
   },
   created() {
+    console.log("chat-side be created");
     console.log(this.$store.state.commonGroupId);
     let commonGroupId = this.$store.state.commonGroupId;
     this.axios
@@ -48,7 +49,7 @@ export default {
       this.axios.put("/api/createGroup").then(res => console.log(res));
     },
     toCommonGroup() {
-      this.$route.push(`/chat/${this.commonGroupInfo.id}`);
+      this.$route.push(`/chat`);
     }
   }
 };

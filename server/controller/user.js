@@ -1,6 +1,7 @@
 const User = require("../model/user.js");
 const Group = require("../model/group");
 const back = require("../common/back.js");
+const { localeTime } = require("../common/util");
 const { getCommonGroupInfoByName } = require("../controller/group");
 /**
  * 用户注册
@@ -42,9 +43,12 @@ const register = async ctx => {
  * @param {*} ctx
  */
 const login = async ctx => {
-  const { name, time } = ctx.request.body;
+  const { name, pwd, time } = ctx.request.body;
   try {
-    let res = await User.findOneAndUpdate({ name }, { lastLoginTime: time });
+    let res = await User.findOneAndUpdate(
+      { name, pwd },
+      { lastLoginTime: localeTime(time) }
+    );
     if (res) {
       let { id, avatar } = res;
       let groupRes = await getCommonGroupInfoByName("全体群");

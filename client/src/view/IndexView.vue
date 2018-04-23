@@ -74,36 +74,37 @@ export default {
       this.$refs[ref].validate(valid => {
         if (valid) {
           let { name, pwd } = this[ref];
-          this.axios
-            .post(`/api/${this.view}`, {
-              name,
-              pwd,
-              time: Date.now()
-            })
-            .then(res => {
-              let resText = JSON.parse(res.request.response);
-              let {
-                returnCode,
-                returnMessage,
-                userId,
-                avatar,
+          this.$store.dispatch("loginUser", { name, pwd });
+          // this.axios
+          //   .post(`/api/${this.view}`, {
+          //     name,
+          //     pwd,
+          //     time: Date.now()
+          //   })
+          //   .then(res => {
+          //     let resText = JSON.parse(res.request.response);
+          //     let {
+          //       returnCode,
+          //       returnMessage,
+          //       userId,
+          //       avatar,
 
-                commonGroupId
-              } = resText;
-              if (returnCode === 1) {
-                this.$Message.success("成功,正在为您跳转");
-                this.$store.commit("loginSuccess", {
-                  userId,
-                  avatar,
-                  name,
-                  commonGroupId
-                });
-                this.$router.push(`/chat`);
-              } else {
-                this.$Message.error(returnMessage);
-              }
-            })
-            .catch(err => console.log(err));
+          //       commonGroupId
+          //     } = resText;
+          //     if (returnCode === 1) {
+          //       this.$Message.success("成功,正在为您跳转");
+          //       this.$store.commit("loginSuccess", {
+          //         userId,
+          //         avatar,
+          //         name,
+          //         commonGroupId
+          //       });
+          //       this.$router.push(`/chat`);
+          //     } else {
+          //       this.$Message.error(returnMessage);
+          //     }
+          //   })
+          //   .catch(err => console.log(err));
         }
       });
     },
