@@ -11,13 +11,12 @@
 <script>
 export default {
   data() {
-    return {
-      user: {
-        name: "whyang",
-        avatar:
-          "http://onlzci6oa.bkt.clouddn.com/17-5-6/33331647-file_1494037395631_a205.jpg"
-      }
-    };
+    return {};
+  },
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
   }
 };
 </script>

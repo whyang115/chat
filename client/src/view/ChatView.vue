@@ -4,7 +4,7 @@
 		<chat-menu></chat-menu>
 		<section class="chat-box">
 			<chat-side></chat-side>
-			<chat-content></chat-content>
+			<chat-message></chat-message>
 		</section>
   </div>
 </template>
@@ -13,11 +13,14 @@
 import ChatHeader from "../components/ChatHeader";
 import ChatMenu from "../components/ChatMenu";
 import ChatSide from "../components/ChatSide";
-import ChatContent from "../components/ChatContent";
+import ChatMessage from "../components/ChatMessage";
 export default {
-  components: { ChatHeader, ChatMenu, ChatSide, ChatContent },
+  components: { ChatHeader, ChatMenu, ChatSide, ChatMessage },
   data() {
     return {};
+  },
+  created() {
+    console.log(this.$route.params);
   }
 };
 </script>

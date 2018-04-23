@@ -8,7 +8,7 @@
     <p>{{timeJudge}}好,欢迎光临</p>
     <Form ref="form" :model="form" :rules="rules" label-position="left">
       <FormItem prop="user">
-        <Input type="text" v-model="form.name" placeholder="用户名">
+        <Input type="text" v-model="form.name" autoComplete=false placeholder="用户名">
           <Icon type="person" slot="prepend"/>
         </Input>
       </FormItem>
@@ -45,7 +45,7 @@ export default {
         ]
       },
       user: {
-        name: "whyang",
+        name: "",
         avatar:
           "http://onlzci6oa.bkt.clouddn.com/17-5-6/33331647-file_1494037395631_a205.jpg"
       },
@@ -82,11 +82,23 @@ export default {
             })
             .then(res => {
               let resText = JSON.parse(res.request.response);
-              let { returnCode, returnMessage, id } = resText;
+              let {
+                returnCode,
+                returnMessage,
+                userId,
+                avatar,
+
+                commonGroupId
+              } = resText;
               if (returnCode === 1) {
                 this.$Message.success("成功,正在为您跳转");
-                this.$store.commit("loginSuccess", { id });
-                this.$router.push("/chat");
+                this.$store.commit("loginSuccess", {
+                  userId,
+                  avatar,
+                  name,
+                  commonGroupId
+                });
+                this.$router.push(`/chat`);
               } else {
                 this.$Message.error(returnMessage);
               }

@@ -1,8 +1,12 @@
 <template>
   <section class="chat_side">
     <header>
-      <Button type="success">新建聊天</Button>
+      <Button type="success" @click="createGroup">新建聊天</Button>
     </header>
+    <section class="commonGroup" @click="toCommonGroup">
+      <Avatar :src=commonGroupInfo.avatar></Avatar>
+      <span>{{commonGroupInfo.name}}</span>
+    </section>
     <section class="chat">
       <ul>
         <li v-for="(chat,index) in chatList" :key="index">
@@ -24,25 +28,28 @@
 export default {
   data() {
     return {
-      chatList: [
-        {
-          avatar:
-            "http://onlzci6oa.bkt.clouddn.com/17-5-6/33331647-file_1494037395631_a205.jpg",
-          name: "whyang",
-          lastMsg: "连悦,我喜欢你",
-          newMsgCount: 10,
-          timeAgo: "10:00"
-        },
-        {
-          avatar:
-            "http://onlzci6oa.bkt.clouddn.com/17-5-6/33331647-file_1494037395631_a205.jpg",
-          name: "whyang",
-          lastMsg: "连悦,我喜欢你",
-          newMsgCount: 10,
-          timeAgo: "10:00"
-        }
-      ]
+      commonGroupInfo: {
+        name: "",
+        avatar: "",
+        id: ""
+      },
+      chatList: []
     };
+  },
+  created() {
+    console.log(this.$store.state.commonGroupId);
+    let commonGroupId = this.$store.state.commonGroupId;
+    this.axios
+      .get(`/api/getcommonGroupInfoById?id=${commonGroupId}`)
+      .then(res => (this.commonGroupInfo = res.data));
+  },
+  methods: {
+    createGroup() {
+      this.axios.put("/api/createGroup").then(res => console.log(res));
+    },
+    toCommonGroup() {
+      this.$route.push(`/chat/${this.commonGroupInfo.id}`);
+    }
   }
 };
 </script>
@@ -74,6 +81,17 @@ export default {
     .info {
       width: 40px;
     }
+  }
+}
+.commonGroup {
+  padding: 1rem 0.5rem;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  span {
+    margin-right: 20px;
   }
 }
 header {

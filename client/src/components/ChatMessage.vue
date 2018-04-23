@@ -4,18 +4,18 @@
       <h3>{{chatTitle}}</h3>
       <ul>
         <li
-          v-for="(chat,index) in chatList"
+          v-for="(msg,index) in msgList"
           :key="index"
-          :class="chat.belong">
-          <Avatar :src="chat.avatar"/>
-          <p :class="chat.belong">{{chat.content}}</p>
+          :class="self"
+          >
+          <Avatar :src="msg.avatar"/>
+          <p >{{msg.message}}</p>
         </li>
       </ul>
     </section>
     <section class="chat-input" @keydown.enter="sendChat">
-        <input v-model= sendContent placeholder="请输入你想说的话 ~ ~"></input>
+        <input v-model = sendContent @change="inputChange" placeholder="请输入你想说的话 ~ ~"/>
         <Icon type="android-send" class="icon-send" @click.native="sendChat"></Icon>
-      </Form>
     </section>
 
   </section>
@@ -25,35 +25,40 @@
 export default {
   data() {
     return {
-      sendContent: "12",
-      chatTitle: "聊天室",
-      chatList: [
-        {
-          avatar:
-            "http://onlzci6oa.bkt.clouddn.com/17-5-6/33331647-file_1494037395631_a205.jpg",
-          content: "hello",
-          belong: "other"
-        },
-        {
-          avatar:
-            "http://onlzci6oa.bkt.clouddn.com/17-5-6/33331647-file_1494037395631_a205.jpg",
-          content: "hello",
-          belong: "other"
-        },
-        {
-          avatar:
-            "http://onlzci6oa.bkt.clouddn.com/17-5-6/33331647-file_1494037395631_a205.jpg",
-          content: "hello",
-          belong: "self"
-        }
-      ]
+      sendContent: "",
+      chatTitle: ""
     };
+  },
+  created() {
+    let { type, id } = this.$store.state.currentChat;
+    this.axios.get(`/api/getChat?type=${type}&id=${id}`).then(res => {
+      let { returnCode, msgList, chatTitle } = res.data;
+      if (returnCode) {
+        this.chatTitle = chatTitle;
+        this.$store.state.msgList = msgList;
+      }
+    });
+  },
+  computed: {
+    msgList() {
+      console.log(this.$store.state.msgList);
+      return this.$store.state.msgList;
+    },
+    userId() {
+      return this.$store.state.userId;
+    }
   },
   methods: {
     sendChat() {
       if (!this.sendContent) {
-        alert("内容不能为空");
+        this.$Message.error("发送内容不能为空");
+        return;
       }
+      this.$store.dispatch("sendChat", { message: this.sendContent });
+      this.sendContent = "";
+    },
+    inputChange() {
+      localStorage.setItem("sendContent", this.sendContent);
     }
   }
 };
@@ -74,11 +79,16 @@ export default {
 
 .chat-room {
   height: 88%;
-  padding: 1rem;
+  padding: 1rem 0;
+  overflow: hidden;
   h3 {
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #ddd;
     color: #555;
+  }
+  ul {
+    height: 100%;
+    overflow: auto;
   }
   li {
     display: flex;
