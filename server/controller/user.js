@@ -1,5 +1,7 @@
 const User = require("../model/user.js");
+const Group = require("../model/group");
 const back = require("../common/back.js");
+const { getCommonGroupInfoByName } = require("../controller/group");
 /**
  * 用户注册
  * @param {*} ctx
@@ -16,10 +18,17 @@ const register = async ctx => {
     }
     try {
       // 保存用户
-      console.log(user);
       let savedRes = await user.save();
+      let { id, avatar } = savedRes;
+      let groupRes = await getCommonGroupInfoByName("全体群");
+      let commonGroupId = groupRes.id;
+      await Group.findByIdAndUpdate(commonGroupId, {
+        $push: {
+          members: savedRes
+        }
+      });
       ctx.status = 200;
-      ctx.body = { ...back.success, ...savedRes._id };
+      ctx.body = { ...back.success, userId: id, avatar, name, commonGroupId };
     } catch (error) {
       ctx.throw(500, error);
     }
@@ -37,8 +46,10 @@ const login = async ctx => {
   try {
     let res = await User.findOneAndUpdate({ name }, { lastLoginTime: time });
     if (res) {
-      let id = res._id;
-      ctx.body = { ...back.success, id };
+      let { id, avatar } = res;
+      let groupRes = await getCommonGroupInfoByName("全体群");
+      let commonGroupId = groupRes.id;
+      ctx.body = { ...back.success, userId: id, name, avatar, commonGroupId };
     } else {
       ctx.body = back.userUnExist;
     }
