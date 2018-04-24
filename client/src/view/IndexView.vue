@@ -3,8 +3,7 @@
     <h1>人生若只如初见</h1>
     <h2>Life would be perfect if every moment is just like the first met</h2>
 	  <div class="loginWrap">
-    <Avatar :src = user.avatar icon="person"></Avatar>
-    <h1>{{user.name}}</h1>
+    <!-- <Avatar :src = user.avatar icon="person"></Avatar> -->
     <p>{{timeJudge}}好,欢迎光临</p>
     <Form ref="form" :model="form" :rules="rules" label-position="left">
       <FormItem prop="user">
@@ -44,11 +43,6 @@ export default {
           { type: "string", min: 6, message: "密码不能小于６位" }
         ]
       },
-      user: {
-        name: "",
-        avatar:
-          "http://onlzci6oa.bkt.clouddn.com/17-5-6/33331647-file_1494037395631_a205.jpg"
-      },
       src: "http://onlzci6oa.bkt.clouddn.com/18-3-13/85686249.jpg"
     };
   },
@@ -74,37 +68,12 @@ export default {
       this.$refs[ref].validate(valid => {
         if (valid) {
           let { name, pwd } = this[ref];
-          this.$store.dispatch("loginUser", { name, pwd });
-          // this.axios
-          //   .post(`/api/${this.view}`, {
-          //     name,
-          //     pwd,
-          //     time: Date.now()
-          //   })
-          //   .then(res => {
-          //     let resText = JSON.parse(res.request.response);
-          //     let {
-          //       returnCode,
-          //       returnMessage,
-          //       userId,
-          //       avatar,
-
-          //       commonGroupId
-          //     } = resText;
-          //     if (returnCode === 1) {
-          //       this.$Message.success("成功,正在为您跳转");
-          //       this.$store.commit("loginSuccess", {
-          //         userId,
-          //         avatar,
-          //         name,
-          //         commonGroupId
-          //       });
-          //       this.$router.push(`/chat`);
-          //     } else {
-          //       this.$Message.error(returnMessage);
-          //     }
-          //   })
-          //   .catch(err => console.log(err));
+          this.$store.dispatch("userAction", {
+            router: this.$router,
+            action: this.view,
+            name,
+            pwd
+          });
         }
       });
     },

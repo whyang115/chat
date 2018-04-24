@@ -2,9 +2,14 @@
   <div class="chat-view">
     <chat-header></chat-header>
     <chat-menu></chat-menu>
-    <section class="chat-box">
+    <section v-if="chatView === 'chat'" class="chat-box">
       <chat-side></chat-side>
       <chat-message></chat-message>
+    </section>
+    <section v-else-if="chatView === 'friends'" class="chat-box">
+      <chat-message></chat-message>
+    </section>
+    <section v-else class="chat-box">
     </section>
   </div>
 </template>
@@ -18,6 +23,11 @@ export default {
   components: { ChatHeader, ChatMenu, ChatSide, ChatMessage },
   data() {
     return {};
+  },
+  computed: {
+    chatView() {
+      return this.$store.state.chatView;
+    }
   },
   created() {
     console.log("chat-view be created");

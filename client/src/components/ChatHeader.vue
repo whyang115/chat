@@ -9,14 +9,16 @@
 </template>
 
 <script>
+import { getItem } from "../common/storage";
+import { isEmptyObj } from "../common/util";
 export default {
   data() {
-    return {};
+    return { user: null };
   },
-  computed: {
-    user() {
-      return this.$store.state.user;
-    }
+  created() {
+    this.user = isEmptyObj(this.$store.state.user)
+      ? JSON.parse(getItem("user"))
+      : this.$store.state.user;
   }
 };
 </script>
