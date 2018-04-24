@@ -23,12 +23,13 @@ app
 
 // socket连接
 io.on("connection", socket => {
-  console.log(socket.id);
   socket.on("chat", data => {
-    console.log(socket.id);
     console.log(data);
     socket.broadcast.emit("chat", data);
     socket.emit("chat", data);
+  });
+  socket.on("addFriend", ({ from, to }) => {
+    socket.to(to).emit("addFriend", { from });
   });
   socket.on("disconnection", () => {
     console.log("socket is disconnected");

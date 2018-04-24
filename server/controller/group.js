@@ -63,9 +63,19 @@ const getCommonGroupInfoByName = async name => {
     console.error(error);
   }
 };
+const getCommonGroup = async ctx => {
+  try {
+    let res = await Group.findOne({ name: "全体群" });
+    let { name, avatar, messageList, members, id } = res;
+    ctx.body = { ...Back.success, name, avatar, id, messageList, members };
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = {
   getGroupInfo,
   createGroup,
+  getCommonGroup,
   initCommonGroup,
   getCommonGroupInfoById,
   getCommonGroupInfoByName

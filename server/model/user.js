@@ -20,6 +20,9 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  socketId: {
+    type: String
+  },
   registerTime: {
     type: Date,
     required: false

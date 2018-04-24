@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { initCommonGroup } = require("../controller/group");
+const { initCommonGroup } = require("../common/commonGroup");
 module.exports = async () => {
   await mongoose.connect("mongodb://localhost/chat");
 

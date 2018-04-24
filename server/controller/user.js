@@ -2,14 +2,19 @@ const User = require("../model/user.js");
 const Group = require("../model/group");
 const back = require("../common/back.js");
 const { localeTime } = require("../common/util");
-const { getCommonGroupInfoByName } = require("../controller/group");
 /**
  * 用户注册
  * @param {*} ctx
  */
 const register = async ctx => {
-  const { name, pwd, time } = ctx.request.body;
-  let user = new User({ name, pwd, registerTime: time, lastLoginTime: time });
+  const { name, pwd, time, socketId } = ctx.request.body;
+  let user = new User({
+    name,
+    pwd,
+    socketId,
+    registerTime: time,
+    lastLoginTime: time
+  });
   try {
     // 判断用户是否已经存在
     let res = await User.findOne({ name });
@@ -17,22 +22,21 @@ const register = async ctx => {
       ctx.body = back.userExist;
       return;
     }
-    try {
-      // 保存用户
-      let savedRes = await user.save();
-      let { id, avatar } = savedRes;
-      let groupRes = await getCommonGroupInfoByName("全体群");
-      let commonGroupId = groupRes.id;
-      await Group.findByIdAndUpdate(commonGroupId, {
+    // 保存用户
+    let savedRes = await user.save();
+    let { id, avatar } = savedRes;
+
+    // 将注册用户的userId及socketId保存至全体群中
+    await Group.findOneAndUpdate(
+      { name: "全体群" },
+      {
         $push: {
-          members: savedRes
+          members: { userId: id, socketId }
         }
-      });
-      ctx.status = 200;
-      ctx.body = { ...back.success, userId: id, avatar, name, commonGroupId };
-    } catch (error) {
-      ctx.throw(500, error);
-    }
+      }
+    );
+    ctx.status = 200;
+    ctx.body = { ...back.success, userId: id, avatar, name };
   } catch (error) {
     ctx.throw(500, error);
   }
@@ -43,17 +47,15 @@ const register = async ctx => {
  * @param {*} ctx
  */
 const login = async ctx => {
-  const { name, pwd, time } = ctx.request.body;
+  const { name, pwd, time, socketId } = ctx.request.body;
   try {
     let res = await User.findOneAndUpdate(
       { name, pwd },
-      { lastLoginTime: localeTime(time) }
+      { lastLoginTime: localeTime(time), socketId }
     );
     if (res) {
       let { id, avatar } = res;
-      let groupRes = await getCommonGroupInfoByName("全体群");
-      let commonGroupId = groupRes.id;
-      ctx.body = { ...back.success, userId: id, name, avatar, commonGroupId };
+      ctx.body = { ...back.success, userId: id, name, avatar };
     } else {
       ctx.body = back.userUnExist;
     }
@@ -66,9 +68,8 @@ const getFriendList = async ctx => {
   const { id } = ctx.query;
   try {
     let res = await User.findById(id);
-    console.log(res);
     let { friendList } = res;
-    ctx.body = friendList;
+    ctx.body = { ...back.success, friendList };
   } catch (error) {
     console.log(error);
   }
