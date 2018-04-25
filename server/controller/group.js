@@ -1,7 +1,7 @@
 const Group = require("../model/group.js");
 const Back = require("../common/back");
 const Chat = require("../model/chat");
-const getGroupInfo = async ctx => {
+const getGroup = async ctx => {
   const { id } = ctx.query;
   let info = await Group.findById(id);
   ctx.body = info;
@@ -45,24 +45,6 @@ const createGroup = async ctx => {
   }
 };
 
-const getCommonGroupInfoById = async ctx => {
-  const { id } = ctx.query;
-  try {
-    let res = await Group.findById(id);
-    let { avatar, name } = res;
-    ctx.body = { ...Back.success, avatar, name };
-  } catch (error) {
-    console.error(error);
-  }
-};
-const getCommonGroupInfoByName = async name => {
-  try {
-    let res = await Group.findOne({ name: name });
-    return res;
-  } catch (error) {
-    console.error(error);
-  }
-};
 const getCommonGroup = async ctx => {
   try {
     let res = await Group.findOne({ name: "全体群" });
@@ -73,10 +55,8 @@ const getCommonGroup = async ctx => {
   }
 };
 module.exports = {
-  getGroupInfo,
+  getGroup,
   createGroup,
   getCommonGroup,
-  initCommonGroup,
-  getCommonGroupInfoById,
-  getCommonGroupInfoByName
+  initCommonGroup
 };

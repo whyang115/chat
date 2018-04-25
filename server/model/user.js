@@ -5,6 +5,8 @@ const Schema = mongoose.Schema;
  * 用户描述
  *  名称
  *  密码
+ *  socketId
+ *  聊天列表
  *  注册日期
  *  好友
  *  头像
@@ -22,6 +24,9 @@ const UserSchema = new Schema({
   },
   socketId: {
     type: String
+  },
+  chatList: {
+    type: Array
   },
   registerTime: {
     type: Date,

@@ -1,25 +1,27 @@
 <template>
   <section class="chat-content">
+    <div v-show="isShowUserInfo" class="userInfo" :style="{left: userInfo.left + 'px',top: userInfo.top + 'px'}">
+      <Avatar :src="userInfo.avatar" size="large"></Avatar>
+      <div class="name">{{userInfo.name}}</div>
+      <div class="operation">
+        <div class="beFriend" @click="beFriend(userInfo.userId)">加为好友</div>
+        <div class="divideLine"></div>
+        <div class="sendMsg" @click="privateChat(userInfo.userId)">发送消息</div>
+      </div>
+    </div>
     <section class="chat-room">
       <h3>{{chatTitle}}</h3>
-      <ul>
+      <ul ref="chatRoom">
         <li
           v-for="(msg,index) in msgList"
           :key="index"
           :class="msg.userId === user.userId ? 'self' : 'other'"
           ref="msgItem"
         >
-          <div class="userInfo">
-            <Avatar :src="msg.avatar" size="large"></Avatar>
-            <div class="name">{{msg.name}}</div>
-            <div class="operation">
-              <div class="beFriend" @click="beFriend(msg.userId)">加为好友</div>
-              <div class="divideLine"></div>
-              <div class="sendMsg" @click="divrivateChat(msg.userId)">发送消息</div>
-            </div>
-          </div>
-          <Avatar :src="msg.avatar" @click="showUserInfo(msg.userId,index)"/>
-          <p>{{msg.message}}</p>
+         <div class="avatarBox" @mouseover="showUserInfo(msg,index)" @mouseout="isShowUserInfo = false">
+          <Avatar :src="msg.avatar" />
+           </div>
+          <p>{{msg.msg}}</p>
         </li>
       </ul>
     </section>
@@ -36,13 +38,18 @@ export default {
   data() {
     return {
       sendContent: "",
-      chatTitle: ""
+      chatTitle: "",
+      isShowUserInfo: false,
+      userInfo: {}
     };
   },
   created() {
     if (getItem("sendContent")) {
       this.sendContent = getItem("sendContent");
     }
+  },
+  mounted() {
+    this.handleScroll();
   },
   computed: {
     msgList() {
@@ -58,7 +65,10 @@ export default {
         this.$Message.error("发送内容不能为空");
         return;
       }
-      this.$store.dispatch("sendChat", { message: this.sendContent });
+      this.$store.dispatch("sendChat", { msg: this.sendContent });
+      setTimeout(() => {
+        this.handleScroll();
+      }, 0);
       this.sendContent = "";
     },
     inputChange() {
@@ -66,14 +76,29 @@ export default {
       setItem("sendContent", this.sendContent);
       console.log(getItem("sendContent"));
     },
-    showUserInfo(id, index) {
-      console.log(this.$refs);
-      if (user.userId !== id) {
-        this.showUser = true;
-      }
+    showUserInfo(msg, index) {
+      let $target = this.$refs.msgItem[index];
+      let $top = $target.offsetTop;
+      this.userInfo = msg;
+      this.isShowUserInfo = msg.userId !== this.user.userId;
+      this.userInfo.top = $top > 150 ? $top - 140 : $top + 36;
+      this.userInfo.left = -60;
     },
     beFriend(id) {
       this.$store.dispatch("beFriend", { id });
+    },
+    privateChat(id) {
+      this.$store.dispatch("privateChat", { id });
+    },
+    handleScroll() {
+      let $target = this.$refs.chatRoom;
+      $target.scrollTop = $target.scrollHeight - $target.offsetTop;
+    }
+  },
+  watch: {
+    msgList() {
+      console.log(this.msgList);
+      this.handleScroll();
     }
   }
 };
@@ -82,12 +107,49 @@ export default {
 <style lang="scss" scoped>
 @import "../common/common.scss";
 .chat-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex: 3;
 }
-
+.userInfo {
+  position: absolute;
+  padding-top: 1rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  width: 180px;
+  z-index: 99;
+  .operation {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ccc;
+    cursor: pointer;
+  }
+  .beFriend,
+  .sendMsg {
+    flex-grow: 1;
+    color: $main;
+    line-height: 36px;
+    &:hover {
+      color: #fff;
+      background-color: $main;
+    }
+  }
+  .divideLine {
+    height: 40%;
+    width: 1px;
+    background-color: #999;
+  }
+  .name {
+    color: #333;
+    font-size: 20px;
+    margin: 0.5rem 0;
+    text-align: center;
+  }
+}
 .chat-room,
 .chat-input {
   background-color: #fff;
@@ -112,39 +174,7 @@ export default {
     margin: 1rem 0;
     padding: 0 1rem;
     position: relative;
-    .userInfo {
-      position: absolute;
-      top: 100px;
-      left: 0;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      width: 180px;
-      padding: 0.6rem 1rem;
-      z-index: 99;
-      .operation {
-        width: 100%;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        border-top: 1px solid #333;
-        cursor: pointer;
-      }
-      .beFriend,
-      .sendMsg {
-        flex-grow: 1;
-      }
-      .divideLine {
-        height: 80%;
-        width: 1px;
-        background-color: #333;
-      }
-      .name {
-        color: #333;
-        font-size: 20px;
-        margin: 1rem 0;
-        text-align: center;
-      }
-    }
+
     p {
       margin: 0 1rem;
       padding: 0.2rem 0.8rem;

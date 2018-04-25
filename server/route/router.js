@@ -7,9 +7,9 @@ const router = new Router({
 });
 router.post("/register", user.register);
 router.post("/login", user.login);
-router.get("/friends", user.getFriendList);
 router.post("/group", group.createGroup);
-router.get("/getCommonGroupInfoById", group.getCommonGroupInfoById);
-router.get("/getChat", chat.getChat);
+router.get("/group", group.getGroup);
+router.get("/friends", user.getFriendList);
+router.get("/chat", chat.getChat);
 router.get("/commonGroup", group.getCommonGroup);
 module.exports = router;

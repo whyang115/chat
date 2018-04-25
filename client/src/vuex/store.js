@@ -18,17 +18,17 @@ const store = new Vuex.Store({
     msgList: []
   },
   mutations: {
-    loginSuccess(state, { router, userId, avatar, name, commonGroupId }) {
+    loginSuccess(state, { router, userId, avatar, name, chatType, chatId }) {
       state.user = {
         userId,
         name,
         avatar
       };
       state.currentChat = {
-        chatType: "group",
-        chatId: commonGroupId
+        chatType,
+        chatId
       };
-      setItem("user", JSON.stringify({ userId, avatar, name }));
+      setItem(`user${userId}`, JSON.stringify({ userId, avatar, name }));
       router.push("/chat");
     },
     changeChatView(state, { view }) {
@@ -48,27 +48,39 @@ const store = new Vuex.Store({
           socketId: socket.id
         })
         .then(res => {
-          console.log(res);
           if (res.status === 200) {
-            let { avatar, userId, commonGroupId } = res.data;
-            commit("loginSuccess", {
-              router,
+            let {
               avatar,
-              name,
               userId,
-              commonGroupId
-            });
-          } else {
-            console.log(res.data.returnMessage);
+              chatType,
+              chatId,
+              returnCode,
+              returnMessage
+            } = res.data;
+            if (returnCode === 1) {
+              commit("loginSuccess", {
+                router,
+                avatar,
+                name,
+                userId,
+                chatType,
+                chatId,
+                returnCode,
+                returnMessage
+              });
+              socket.emit("joinGroup", { userId, chatId });
+            } else {
+              console.log(returnMessage);
+            }
           }
-        });
+        })
+        .catch(err => console.log(err));
     },
-    sendChat({ commit }, { message }) {
-      console.log(this.state);
+    sendChat({ commit }, { msg }) {
       socket.emit("chat", {
-        message,
+        msg,
+        to: this.state.currentChat.chatId,
         ...this.state.user,
-        ...this.state.currentChat,
         sendTime: new Date()
       });
     },
@@ -106,5 +118,4 @@ socket.on("chat", data => {
 socket.on("addFriend", ({ form }) => {
   alert("一个来自" + from + "的好友请求");
 });
-console.log(socket.join);
 export default store;

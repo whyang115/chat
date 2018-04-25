@@ -5,12 +5,7 @@ const ChatSchema = new Schema({
   type: {
     type: String
   },
-  chatTitle: {
-    type: String
-  },
-  avatar: {
-    type: String
-  },
+  from: { type: String },
   to: {
     type: String
   },

@@ -1,6 +1,7 @@
 const User = require("../model/user.js");
 const Group = require("../model/group");
 const back = require("../common/back.js");
+const Chat = require("../model/chat");
 const { localeTime } = require("../common/util");
 /**
  * 用户注册
@@ -27,7 +28,7 @@ const register = async ctx => {
     let { id, avatar } = savedRes;
 
     // 将注册用户的userId及socketId保存至全体群中
-    await Group.findOneAndUpdate(
+    let group = await Group.findOneAndUpdate(
       { name: "全体群" },
       {
         $push: {
@@ -35,8 +36,25 @@ const register = async ctx => {
         }
       }
     );
+    // 将全体群保存至聊天列表中
+    let commonGroupId = group.id;
+    let groupChat = new Chat({
+      type: "group",
+      from: id,
+      to: commonGroupId,
+      msgList: []
+    });
+    await groupChat.save();
+
     ctx.status = 200;
-    ctx.body = { ...back.success, userId: id, avatar, name };
+    ctx.body = {
+      ...back.success,
+      userId: id,
+      avatar,
+      name,
+      chatType: group,
+      chatId: commonGroupId
+    };
   } catch (error) {
     ctx.throw(500, error);
   }
@@ -55,7 +73,16 @@ const login = async ctx => {
     );
     if (res) {
       let { id, avatar } = res;
-      ctx.body = { ...back.success, userId: id, name, avatar };
+      let chat = await Chat.find({ from: id }, { $sort: { _id: -1 } });
+      let firstChat = chat[0];
+      ctx.body = {
+        ...back.success,
+        userId: id,
+        name,
+        avatar,
+        chatType: firstChat.type,
+        chatId: firstChat.to
+      };
     } else {
       ctx.body = back.userUnExist;
     }
