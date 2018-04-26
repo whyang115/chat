@@ -81,6 +81,7 @@ const store = new Vuex.Store({
         msg,
         to: this.state.currentChat.chatId,
         ...this.state.user,
+        isShowUserInfo: false,
         sendTime: new Date()
       });
     },
@@ -113,6 +114,21 @@ const store = new Vuex.Store({
 });
 
 socket.on("chat", data => {
+  Notification.requestPermission(res => {
+    if (res !== "denied" && data.to !== store.state.user.userId) {
+      let n = new Notification(`${data.name}向您发来一条新消息`, {
+        body: data.msg,
+        tag: data.to,
+        icon: data.avatar
+      });
+      n.onclick = () => {
+        n.close();
+      };
+      setTimeout(() => {
+        n.close();
+      }, 2000);
+    }
+  });
   store.state.msgList.push(data);
 });
 socket.on("addFriend", ({ form }) => {

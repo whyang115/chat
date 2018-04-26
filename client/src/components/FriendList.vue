@@ -11,7 +11,10 @@
   <div class="friendList">
     <h3>好友列表</h3>
       <ul>
-        <li v-for="item in friendList" key={item.userId}>
+        <li
+          v-for="item in friendList"
+          :key = item.userId
+        >
           <Avatar></Avatar>
           <div class="detail">
             <div class="date"></div>
@@ -26,7 +29,9 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      friendList: [{ userId: "1" }]
+    };
   },
   created() {
     this.$store.dispatch("getFriends");

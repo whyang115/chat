@@ -1,15 +1,6 @@
 <template>
   <section class="chat-content">
-    <div v-show="isShowUserInfo" class="userInfo" :style="{left: userInfo.left + 'px',top: userInfo.top + 'px'}">
-      <Avatar :src="userInfo.avatar" size="large"></Avatar>
-      <div class="name">{{userInfo.name}}</div>
-      <div class="operation">
-        <div class="beFriend" @click="beFriend(userInfo.userId)">加为好友</div>
-        <div class="divideLine"></div>
-        <div class="sendMsg" @click="privateChat(userInfo.userId)">发送消息</div>
-      </div>
-    </div>
-    <section class="chat-room">
+        <section class="chat-room">
       <h3>{{chatTitle}}</h3>
       <ul ref="chatRoom">
         <li
@@ -18,9 +9,18 @@
           :class="msg.userId === user.userId ? 'self' : 'other'"
           ref="msgItem"
         >
-         <div class="avatarBox" @mouseover="showUserInfo(msg,index)" @mouseout="isShowUserInfo = false">
-          <Avatar :src="msg.avatar" />
-           </div>
+         <div class="avatarBox" @mouseover="showUserInfo(msg,index)" @mouseout="hideUserInfo(index)">
+          <div v-show="msg.isShowUserInfo" class="userInfo" :style="{left: userInfo.left + 'px',top: userInfo.top + 'px'}">
+            <Avatar :src="msg.avatar" size="large"></Avatar>
+            <div class="name">{{msg.name}}</div>
+            <div class="operation">
+              <div class="beFriend" @click="beFriend(msg.userId)">加为好友</div>
+              <div class="divideLine"></div>
+              <div class="sendMsg" @click="privateChat(msg.userId)">发送消息</div>
+            </div>
+          </div>
+           <Avatar :src="msg.avatar" />
+          </div>
           <p>{{msg.msg}}</p>
         </li>
       </ul>
@@ -79,10 +79,14 @@ export default {
     showUserInfo(msg, index) {
       let $target = this.$refs.msgItem[index];
       let $top = $target.offsetTop;
-      this.userInfo = msg;
-      this.isShowUserInfo = msg.userId !== this.user.userId;
-      this.userInfo.top = $top > 150 ? $top - 140 : $top + 36;
+      if (msg.userId !== this.user.userId) {
+        this.msgList[index].isShowUserInfo = true;
+      }
+      this.userInfo.top = $top > 150 ? $top : $top + 36;
       this.userInfo.left = -60;
+    },
+    hideUserInfo(index) {
+      this.msgList[index].isShowUserInfo = false;
     },
     beFriend(id) {
       this.$store.dispatch("beFriend", { id });
@@ -107,7 +111,6 @@ export default {
 <style lang="scss" scoped>
 @import "../common/common.scss";
 .chat-content {
-  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -150,6 +153,9 @@ export default {
     text-align: center;
   }
 }
+.avatar-box {
+  position: relative;
+}
 .chat-room,
 .chat-input {
   background-color: #fff;
@@ -180,12 +186,23 @@ export default {
       padding: 0.2rem 0.8rem;
       line-height: 1.5rem;
       border-radius: 1.5rem;
+      position: relative;
     }
     &.other {
       justify-content: flex-start;
       p {
         color: #fff;
         background-color: #ccc;
+        &::before {
+          content: "";
+          width: 0;
+          height: 0;
+          position: absolute;
+          top: 6px;
+          left: -21px;
+          border: 10px solid transparent;
+          border-right: 15px solid #ccc;
+        }
       }
     }
     &.self {
