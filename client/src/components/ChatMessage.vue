@@ -8,8 +8,9 @@
           :key="index"
           :class="msg.userId === user.userId ? 'self' : 'other'"
           ref="msgItem"
+          @mouseout="hideUserInfo(index)"
         >
-         <div class="avatarBox" @mouseover="showUserInfo(msg,index)" @mouseout="hideUserInfo(index)">
+         <div class="avatarBox" @mouseover="showUserInfo(msg,index)" >
           <div v-show="msg.isShowUserInfo" class="userInfo" :style="{left: userInfo.left + 'px',top: userInfo.top + 'px'}">
             <Avatar :src="msg.avatar" size="large"></Avatar>
             <div class="name">{{msg.name}}</div>
@@ -79,11 +80,12 @@ export default {
     showUserInfo(msg, index) {
       let $target = this.$refs.msgItem[index];
       let $top = $target.offsetTop;
+      let $scrollTop = this.$refs.chatRoom.scrollTop;
       if (msg.userId !== this.user.userId) {
         this.msgList[index].isShowUserInfo = true;
       }
-      this.userInfo.top = $top > 150 ? $top : $top + 36;
-      this.userInfo.left = -60;
+      this.userInfo.top = $top - $scrollTop > 150 ? -140 : 40;
+      this.userInfo.left = 0;
     },
     hideUserInfo(index) {
       this.msgList[index].isShowUserInfo = false;

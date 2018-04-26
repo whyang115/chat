@@ -131,7 +131,7 @@ socket.on("chat", data => {
   });
   store.state.msgList.push(data);
 });
-socket.on("addFriend", ({ form }) => {
-  alert("一个来自" + from + "的好友请求");
+socket.on("addFriend", ({ from }) => {
+  console.log("一个来自" + from + "的好友请求");
 });
 export default store;

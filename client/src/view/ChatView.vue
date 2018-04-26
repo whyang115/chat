@@ -7,11 +7,11 @@
       <chat-message></chat-message>
     </section>
     <section v-else-if="chatView === 'friends'" class="chat-box">
-      <friend-list></friend-list>
+      <!-- <friend-list></friend-list> -->
       <chat-message></chat-message>
     </section>
     <section v-else class="chat-box">
-      <setting></setting>
+      <!-- <setting></setting> -->
     </section>
   </div>
 </template>
@@ -21,8 +21,8 @@ import ChatHeader from "../components/ChatHeader";
 import ChatMenu from "../components/ChatMenu";
 import ChatSide from "../components/ChatSide";
 import ChatMessage from "../components/ChatMessage";
-import FriendList from "../components/FriendList";
-import Setting from "../components/Setting";
+// import FriendList from "../components/FriendList";
+// import Setting from "../components/Setting";
 export default {
   components: { ChatHeader, ChatMenu, ChatSide, ChatMessage },
   data() {

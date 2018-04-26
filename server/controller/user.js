@@ -71,9 +71,10 @@ const login = async ctx => {
       { name, pwd },
       { lastLoginTime: localeTime(time), socketId }
     );
+
     if (res) {
       let { id, avatar } = res;
-      let chat = await Chat.find({ from: id } ).sort({_id: -1});
+      let chat = await Chat.find({ from: id }).sort({ _id: -1 });
       let firstChat = chat[0];
       ctx.body = {
         ...back.success,
