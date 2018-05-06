@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 /**
  * 信息描述
@@ -13,22 +13,24 @@ const Schema = mongoose.Schema;
 const MessageSchema = new Schema({
   content: {
     type: String,
-    required: true
+    required: true,
+    default: ""
   },
   sendTime: {
     type: Date,
     required: true
   },
   from: {
-    type: String,
+    type: Object,
     required: true
   },
   to: {
-    type: String
+    type: Schema.Types.ObjectId
   },
   isRead: {
-    type: Boolean
+    type: Boolean,
+    default: false
   }
 });
-const model = mongoose.model("Message", MessageSchema);
-module.exports = model;
+const Message = mongoose.model("Message", MessageSchema);
+module.exports = Message;

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 /**
  * 用户描述
@@ -25,9 +25,6 @@ const UserSchema = new Schema({
   socketId: {
     type: String
   },
-  chatList: {
-    type: Array
-  },
   registerTime: {
     type: Date,
     required: false
@@ -36,9 +33,9 @@ const UserSchema = new Schema({
     type: Date,
     required: true
   },
-  friendList: {
-    type: Array
-  },
+  friendList: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  chatList: [{ type: Schema.Types.ObjectId, ref: "Chat" }],
+  activeChat: { type: Schema.Types.ObjectId, ref: "Chat" },
   avatar: {
     type: String,
     default:
@@ -49,5 +46,5 @@ const UserSchema = new Schema({
     default: "未知"
   }
 });
-const model = mongoose.model("User", UserSchema);
-module.exports = model;
+const User = mongoose.model("User", UserSchema);
+module.exports = User;

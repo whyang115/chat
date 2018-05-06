@@ -5,10 +5,16 @@ const Chat = require("../model/chat");
 const { localeTime } = require("../common/util");
 /**
  * 用户注册
+ * 1. 保存用户
+ * 2. 将用户添加至全体群中
+ * 3. 将全体群聊天添加至用户聊天列表中
  * @param {*} ctx
  */
 const register = async ctx => {
   const { name, pwd, time, socketId } = ctx.request.body;
+  /**
+   * 新建用户
+   */
   let user = new User({
     name,
     pwd,
@@ -24,36 +30,36 @@ const register = async ctx => {
       return;
     }
     // 保存用户
-    let savedRes = await user.save();
-    let { id, avatar } = savedRes;
+    let { id } = user;
 
-    // 将注册用户的userId及socketId保存至全体群中
-    let group = await Group.findOneAndUpdate(
-      { name: "全体群" },
-      {
-        $push: {
-          members: { userId: id, socketId }
-        }
-      }
-    );
-    // 将全体群保存至聊天列表中
+    // 将注册用户保存至全体群中
+    let group = await Group.findOne({ name: "全体群" });
+    group.members.push(id);
+    await group.save();
     let commonGroupId = group.id;
-    let groupChat = new Chat({
+
+    // 将全体群聊天保存至用户的聊天列表中
+    let chat = new Chat({
       type: "group",
       from: id,
       to: commonGroupId,
+      chatTitle: "全体群",
+      createTime: time,
       msgList: []
     });
-    await groupChat.save();
-
+    let chatId = chat._id;
+    user.chatList.push(chatId);
+    user.activeChat = chatId;
+    await user.save();
+    await chat.save();
+    /**
+     * 返回用户id
+     */
     ctx.status = 200;
     ctx.body = {
       ...back.success,
-      userId: id,
-      avatar,
-      name,
-      chatType: group,
-      chatId: commonGroupId
+      id,
+      groupId: commonGroupId
     };
   } catch (error) {
     ctx.throw(500, error);
@@ -103,8 +109,38 @@ const getFriendList = async ctx => {
   }
 };
 
+const getUserInfo = async ctx => {
+  const { id } = ctx.query;
+  try {
+    let user = await User.findById(id)
+      .populate("friendList")
+      .populate("activeChat");
+    let { avatar, name, chatList, friendList, activeChat } = user;
+    ctx.body = {
+      ...back.success,
+      avatar,
+      name,
+      activeChat,
+      chatList,
+      friendList
+    };
+  } catch (error) {
+    console.error(error);
+  }
+};
+const getChatList = async ctx => {
+  const { id } = ctx.query;
+  try {
+    let res = await User.findById(id).populate("chatList");
+    console.log(res);
+  } catch (err) {
+    console.log(err);
+  }
+};
 module.exports = {
   register,
   login,
-  getFriendList
+  getFriendList,
+  getUserInfo,
+  getChatList
 };

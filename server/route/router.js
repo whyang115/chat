@@ -8,8 +8,10 @@ const router = new Router({
 router.post("/register", user.register);
 router.post("/login", user.login);
 router.post("/group", group.createGroup);
+router.get("/user", user.getUserInfo);
 router.get("/group", group.getGroup);
 router.get("/friends", user.getFriendList);
+router.get("/chatList", user.getChatList);
 router.get("/chat", chat.getChat);
 router.get("/commonGroup", group.getCommonGroup);
 module.exports = router;

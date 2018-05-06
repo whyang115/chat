@@ -3,7 +3,6 @@
     <h1>人生若只如初见</h1>
     <h2>Life would be perfect if every moment is just like the first met</h2>
 	  <div class="loginWrap">
-    <!-- <Avatar :src = user.avatar icon="person"></Avatar> -->
     <p>{{timeJudge}}好,欢迎光临</p>
     <Form ref="form" :model="form" :rules="rules" label-position="left">
       <FormItem prop="user">

@@ -1,35 +1,39 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
-import { setItem } from "../common/storage";
+import { setItem, getItem } from "../common/storage";
 Vue.use(Vuex);
 
 const socket = window.io.connect("http://localhost:1105");
 const store = new Vuex.Store({
   state: {
-    user: {},
-    commonGroup: {},
-    currentChat: {
-      chatType: "",
-      chatId: ""
-    },
     chatView: "chat",
+    user: {},
+    commonGroup: {
+      name: "全体群",
+      avatar:
+        "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-1/13991140.jpg"
+    },
+    chatInfo: {},
+    activeChat: {},
     chatList: [],
+    friendList: [],
     msgList: []
   },
   mutations: {
-    loginSuccess(state, { router, userId, avatar, name, chatType, chatId }) {
+    loginSuccess(
+      state,
+      { id, avatar, name, activeChat, chatList, friendList }
+    ) {
+      console.log(...arguments);
       state.user = {
-        userId,
+        id,
         name,
         avatar
       };
-      state.currentChat = {
-        chatType,
-        chatId
-      };
-      setItem(`user${userId}`, JSON.stringify({ userId, avatar, name }));
-      router.push("/chat");
+      state.activeChat = activeChat;
+      state.friendList = friendList;
+      state.chatList = chatList;
     },
     changeChatView(state, { view }) {
       state.chatView = view;
@@ -39,54 +43,95 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    userAction({ commit }, { router, action, name, pwd }) {
-      axios
-        .post(`/api/${action}`, {
+    async userAction({ commit, dispatch }, { router, action, name, pwd }) {
+      try {
+        let res = await axios.post(`/api/${action}`, {
           name,
           pwd,
           time: new Date(),
           socketId: socket.id
-        })
-        .then(res => {
-          if (res.status === 200) {
-            let {
-              avatar,
-              userId,
-              chatType,
-              chatId,
-              returnCode,
-              returnMessage
-            } = res.data;
-            if (returnCode === 1) {
-              commit("loginSuccess", {
-                router,
-                avatar,
-                name,
-                userId,
-                chatType,
-                chatId,
-                returnCode,
-                returnMessage
-              });
-              socket.emit("joinGroup", { userId, chatId });
-            } else {
-              console.log(returnMessage);
-            }
+        });
+        let { id, returnCode, returnMessage, groupId } = res.data;
+        if (returnCode) {
+          if (getItem("user")) {
+            let user = JSON.parse(getItem("user"));
+            user[id] = id;
+            setItem("user", JSON.stringify(user));
+          } else {
+            setItem("user", JSON.stringify({ [id]: id }));
           }
-        })
-        .catch(err => console.log(err));
+          await dispatch("getUserInfo", { router, id });
+          if (action === "register") {
+            socket.emit("joinGroup", { groupId });
+          }
+        } else {
+          console.log(returnMessage);
+        }
+      } catch (err) {
+        window.alert(err);
+      }
     },
-    sendChat({ commit }, { msg }) {
+    async getUserInfo({ commit }, { router, id }) {
+      let res = await axios.get("/api/user", {
+        params: {
+          id
+        }
+      });
+      let {
+        avatar,
+        name,
+        activeChat,
+        chatList,
+        friendList,
+        returnCode,
+        returnMessage
+      } = res.data;
+      if (returnCode) {
+        commit("loginSuccess", {
+          id,
+          avatar,
+          name,
+          activeChat,
+          chatList,
+          friendList
+        });
+        router.push("/chat");
+      } else {
+        console.log(returnMessage);
+      }
+    },
+    async getChatInfo({ commit, state }) {
+      try {
+        let res = await axios.get("/api/chat", {
+          params: { id: state.activeChat._id }
+        });
+        let { name, avatar, msgList, returnCode, returnMessage } = res.data;
+        if (returnCode) {
+          state.activeChat = Object.assign(state.activeChat, {
+            name,
+            avatar,
+            msgList
+          });
+          console.log(state);
+        } else {
+          console.log(returnMessage);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    sendChat({ commit, state }, { content }) {
       socket.emit("chat", {
-        msg,
-        to: this.state.currentChat.chatId,
-        ...this.state.user,
+        content,
+        chatId: state.activeChat._id,
+        to: state.activeChat.to,
+        from: state.user,
         isShowUserInfo: false,
         sendTime: new Date()
       });
     },
-    getFriends({ commit }) {
-      axios.get(`/friends?id=${this.state.user.userId}`).then(res => {
+    getFriends({ commit, state }) {
+      axios.get(`/friends?id=${state.user.id}`).then(res => {
         console.log(res);
       });
     },
@@ -115,11 +160,11 @@ const store = new Vuex.Store({
 
 socket.on("chat", data => {
   Notification.requestPermission(res => {
-    if (res !== "denied" && data.to !== store.state.user.userId) {
-      let n = new Notification(`${data.name}向您发来一条新消息`, {
-        body: data.msg,
-        tag: data.to,
-        icon: data.avatar
+    if (res !== "denied" && data.from.id !== store.state.user.id) {
+      let n = new Notification(`${data.from.name}向您发来一条新消息`, {
+        body: data.content,
+        tag: data.from,
+        icon: data.from.avatar
       });
       n.onclick = () => {
         n.close();

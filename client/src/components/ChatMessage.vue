@@ -1,28 +1,28 @@
 <template>
   <section class="chat-content">
         <section class="chat-room">
-      <h3>{{chatTitle}}</h3>
+      <h3>{{chatInfo.name}}</h3>
       <ul ref="chatRoom">
         <li
           v-for="(msg,index) in msgList"
           :key="index"
-          :class="msg.userId === user.userId ? 'self' : 'other'"
+          :class="msg.from.id === user.id ? 'self' : 'other'"
           ref="msgItem"
           @mouseout="hideUserInfo(index)"
         >
          <div class="avatarBox" @mouseover="showUserInfo(msg,index)" >
           <div v-show="msg.isShowUserInfo" class="userInfo" :style="{left: userInfo.left + 'px',top: userInfo.top + 'px'}">
-            <Avatar :src="msg.avatar" size="large"></Avatar>
-            <div class="name">{{msg.name}}</div>
+            <Avatar :src="msg.from.avatar" size="large"></Avatar>
+            <div class="name">{{msg.from.name}}</div>
             <div class="operation">
-              <div class="beFriend" @click="beFriend(msg.userId)">加为好友</div>
+              <div class="beFriend" @click="beFriend(msg.from.id)">加为好友</div>
               <div class="divideLine"></div>
-              <div class="sendMsg" @click="privateChat(msg.userId)">发送消息</div>
+              <div class="sendMsg" @click="privateChat(msg.from.id)">发送消息</div>
             </div>
           </div>
-           <Avatar :src="msg.avatar" />
+           <Avatar :src="msg.from.avatar" />
           </div>
-          <p>{{msg.msg}}</p>
+          <p>{{msg.content}}</p>
         </li>
       </ul>
     </section>
@@ -39,12 +39,13 @@ export default {
   data() {
     return {
       sendContent: "",
-      chatTitle: "",
       isShowUserInfo: false,
       userInfo: {}
     };
   },
   created() {
+    this.$store.dispatch("getChatInfo");
+    console.log(this.$store.state);
     if (getItem("sendContent")) {
       this.sendContent = getItem("sendContent");
     }
@@ -53,6 +54,10 @@ export default {
     this.handleScroll();
   },
   computed: {
+    chatInfo() {
+      console.log(this.$store.state);
+      return this.$store.state.activeChat;
+    },
     msgList() {
       return this.$store.state.msgList;
     },
@@ -66,7 +71,7 @@ export default {
         this.$Message.error("发送内容不能为空");
         return;
       }
-      this.$store.dispatch("sendChat", { msg: this.sendContent });
+      this.$store.dispatch("sendChat", { content: this.sendContent });
       setTimeout(() => {
         this.handleScroll();
       }, 0);

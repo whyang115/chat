@@ -6,10 +6,10 @@ import router from "./router";
 import store from "./vuex/store";
 import iView from "iview";
 import "iview/dist/styles/iview.css";
-
+import { sync } from "vuex-router-sync";
+const unSync = sync(store, router);
 Vue.use(iView);
 Vue.config.productionTip = false;
-
 /* eslint-disable no-new */
 new Vue({
   el: "#app",

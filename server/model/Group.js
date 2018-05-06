@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-
+const { Schema } = mongoose;
 /**
  * 聊天组描述
  *   创建时间
@@ -20,14 +19,7 @@ const GroupSchema = new Schema({
     type: Date,
     default: new Date().toLocaleString()
   },
-  members: {
-    type: Array,
-    default: []
-  },
-  messageList: {
-    type: Array,
-    default: []
-  }
+  members: [{ type: Schema.Types.ObjectId, ref: "User" }]
 });
-const model = mongoose.model("Group", GroupSchema);
-module.exports = model;
+const Group = mongoose.model("Group", GroupSchema);
+module.exports = Group;
