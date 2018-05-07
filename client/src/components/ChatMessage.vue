@@ -44,8 +44,6 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch("getChatInfo");
-    console.log(this.$store.state);
     if (getItem("sendContent")) {
       this.sendContent = getItem("sendContent");
     }

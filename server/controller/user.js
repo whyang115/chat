@@ -132,7 +132,11 @@ const getChatList = async ctx => {
   const { id } = ctx.query;
   try {
     let res = await User.findById(id).populate("chatList");
-    console.log(res);
+    let { chatList } = res;
+    ctx.body = {
+      ...back.success,
+      chatList
+    };
   } catch (err) {
     console.log(err);
   }

@@ -21,6 +21,7 @@ import ChatHeader from "../components/ChatHeader";
 import ChatMenu from "../components/ChatMenu";
 import ChatSide from "../components/ChatSide";
 import ChatMessage from "../components/ChatMessage";
+import { getItem } from "../common/storage";
 // import FriendList from "../components/FriendList";
 // import Setting from "../components/Setting";
 export default {
@@ -34,7 +35,8 @@ export default {
     }
   },
   created() {
-    console.log("chat-view be created");
+    let user = JSON.parse(getItem("user"));
+    user && this.$store.commit("readStorage", user);
   }
 };
 </script>

@@ -17,9 +17,12 @@ export default {
   },
   created() {
     let user = this.$store.state.user;
-    this.user = isEmptyObj(user)
-      ? JSON.parse(getItem(`user${user.userId}`))
-      : user;
+    if (!user) {
+      this.user = JSON.parse(getItem("user"));
+      this.$store.commit("readStorage", user);
+    } else {
+      this.user = user;
+    }
   }
 };
 </script>

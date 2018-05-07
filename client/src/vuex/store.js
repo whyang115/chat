@@ -25,7 +25,6 @@ const store = new Vuex.Store({
       state,
       { id, avatar, name, activeChat, chatList, friendList }
     ) {
-      console.log(...arguments);
       state.user = {
         id,
         name,
@@ -34,6 +33,9 @@ const store = new Vuex.Store({
       state.activeChat = activeChat;
       state.friendList = friendList;
       state.chatList = chatList;
+    },
+    readStorage(state, user) {
+      state.user = user;
     },
     changeChatView(state, { view }) {
       state.chatView = view;
@@ -53,13 +55,6 @@ const store = new Vuex.Store({
         });
         let { id, returnCode, returnMessage, groupId } = res.data;
         if (returnCode) {
-          if (getItem("user")) {
-            let user = JSON.parse(getItem("user"));
-            user[id] = id;
-            setItem("user", JSON.stringify(user));
-          } else {
-            setItem("user", JSON.stringify({ [id]: id }));
-          }
           await dispatch("getUserInfo", { router, id });
           if (action === "register") {
             socket.emit("joinGroup", { groupId });
@@ -71,7 +66,7 @@ const store = new Vuex.Store({
         window.alert(err);
       }
     },
-    async getUserInfo({ commit }, { router, id }) {
+    async getUserInfo({ commit, dispatch }, { router, id }) {
       let res = await axios.get("/api/user", {
         params: {
           id
@@ -95,15 +90,17 @@ const store = new Vuex.Store({
           chatList,
           friendList
         });
+        setItem("user", JSON.stringify({ id, avatar, name }));
+        await dispatch("getChatInfo", { id: activeChat._id });
         router.push("/chat");
       } else {
         console.log(returnMessage);
       }
     },
-    async getChatInfo({ commit, state }) {
+    async getChatInfo({ commit, state }, { id }) {
       try {
         let res = await axios.get("/api/chat", {
-          params: { id: state.activeChat._id }
+          params: { id }
         });
         let { name, avatar, msgList, returnCode, returnMessage } = res.data;
         if (returnCode) {
@@ -119,6 +116,9 @@ const store = new Vuex.Store({
       } catch (error) {
         console.log(error);
       }
+    },
+    getChatList({ state }) {
+      return axios.get("/api/chatList", { params: { id: state.user.id } });
     },
     sendChat({ commit, state }, { content }) {
       socket.emit("chat", {

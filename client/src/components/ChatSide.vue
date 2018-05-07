@@ -3,7 +3,7 @@
     <header>
       <Button type="success" @click="createGroup">新建聊天</Button>
     </header>
-    <section class="commonGroup" @click="toCommonGroup">
+    <section class="commonGroup" >
       <Avatar :src=commonGroupInfo.avatar></Avatar>
       <span>{{commonGroupInfo.name}}</span>
     </section>
@@ -36,15 +36,14 @@ export default {
       chatList: []
     };
   },
-  created() {
+  async created() {
+    let res = await this.$store.dispatch("getChatList");
+    console.log(res);
     this.$store.dispatch("getCommonGroupInfo");
   },
   methods: {
     createGroup() {
       this.$store.dispatch("createGroup");
-    },
-    toCommonGroup() {
-      this.$route.push(`/chat`);
     }
   }
 };
