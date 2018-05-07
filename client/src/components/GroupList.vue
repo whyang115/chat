@@ -1,6 +1,6 @@
 <template>
   <ul class="groupWrap">
-    <li v-for="group in groupList">
+    <li v-for="group in groupList" :key="group.id">
       <Avatar :src="group.avatar"></Avatar>
       <div class="content">
         <div class="name">{{group.name}}</div>

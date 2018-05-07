@@ -1,22 +1,22 @@
-const Chat = require("../model/chat");
+const GroupChat = require("../model/groupChat");
+const PrivateChat = require("../model/privateChat");
 const Group = require("../model/group");
 const User = require("../model/user");
 const Back = require("../common/back");
-const getChat = async ctx => {
-  let { id } = ctx.query;
-  let user = await User.findById(id).populate("activeChat");
-  let { type, to, _id } = user.activeChat;
-  let res =
-    type === "group"
-      ? await Group.findById(to).populate("members")
-      : await User.findById(to);
+// const getChat = async ctx => {
+//   let { id } = ctx.query;
+//   let user = await User.findById(id).populate("activeChat");
+//   let res =
+//     type === "group"
+//       ? await Group.findById(to).populate("members")
+//       : await User.findById(to);
 
-  ctx.body = { ...Back.success, _id, res };
-};
-const getMsgList = async ctx => {
+//   ctx.body = { ...Back.success, _id, res };
+// };
+const getGroupMsgList = async ctx => {
   let { id } = ctx.query;
   try {
-    let res = await Chat.findById(id).populate("msgList");
+    let res = await Group.findById(id).populate("msgList");
     ctx.body = {
       ...Back.success,
       res
@@ -25,5 +25,14 @@ const getMsgList = async ctx => {
     console.log(error);
   }
 };
+const getPrivateMsgList = async ctx => {
+  let { id } = ctx.query;
+  try {
+    let { msgList } = await PrivateChat.findById(id).populate("msgList");
+    console.log(msgList);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-module.exports = { getChat, getMsgList };
+module.exports = { getGroupMsgList, getPrivateMsgList };

@@ -1,6 +1,6 @@
 const Group = require("../model/group.js");
 const Back = require("../common/back");
-const Chat = require("../model/chat");
+const GroupChat = require("../model/groupChat");
 const getGroup = async ctx => {
   const { id } = ctx.query;
   let info = await Group.findById(id);
@@ -20,13 +20,13 @@ const initCommonGroup = async () => {
       findGroup = await group.save();
     }
     let { id, name } = findGroup;
-    let chat = new Chat({
+    let chat = new GroupChat({
       type: "group",
       to: id,
       chatTitle: name,
       msgList: []
     });
-    let findChat = await Chat.findOne({ to: id });
+    let findChat = await GroupChat.findOne({ to: id });
     if (!findChat) {
       await chat.save();
     }

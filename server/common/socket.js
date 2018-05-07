@@ -1,5 +1,6 @@
 const Message = require("../model/message");
-const Chat = require("../model/chat");
+const PrivateChat = require("../model/privateChat");
+const Group = require("../model/group.js");
 // socket连接
 const initSocket = io => {
   // socket连接
@@ -7,7 +8,10 @@ const initSocket = io => {
     // 聊天;
     socket.on("chat", async data => {
       let msg = new Message(data);
-      let chat = await Chat.findById(data.chatId);
+      let chat =
+        data.type === "group"
+          ? await Group.findById(data.to)
+          : await PrivateChat.findById(data.chatId);
       chat.msgList.push(msg.id);
       await msg.save();
       await chat.save();

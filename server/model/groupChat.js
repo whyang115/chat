@@ -12,5 +12,5 @@ const GroupChatSchema = new Schema({
     default: Date.now()
   }
 });
-const GroupChat = mongoose.model("GroupChat", ChatSchema);
+const GroupChat = mongoose.model("GroupChat", GroupChatSchema);
 module.exports = GroupChat;

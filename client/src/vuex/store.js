@@ -7,6 +7,10 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
+    activeChat: {
+      type: "group",
+      id: ""
+    },
     chatView: "chat",
     user: {}
   },

@@ -16,5 +16,5 @@ const PrivateChatSchema = new Schema({
   },
   msgList: [{ type: Schema.Types.ObjectId, ref: "Message" }]
 });
-const PrivateChat = mongoose.model("PrivateChat", ChatSchema);
+const PrivateChat = mongoose.model("PrivateChat", PrivateChatSchema);
 module.exports = PrivateChat;
