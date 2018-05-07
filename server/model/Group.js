@@ -19,7 +19,8 @@ const GroupSchema = new Schema({
     type: Date,
     default: new Date().toLocaleString()
   },
-  members: [{ type: Schema.Types.ObjectId, ref: "User" }]
+  members: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  msgList: [{ type: Schema.Types.ObjectId, ref: "Message" }]
 });
 const Group = mongoose.model("Group", GroupSchema);
 module.exports = Group;

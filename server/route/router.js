@@ -13,5 +13,6 @@ router.get("/group", group.getGroup);
 router.get("/friends", user.getFriendList);
 router.get("/chatList", user.getChatList);
 router.get("/chat", chat.getChat);
+router.get("/msgList", chat.getMsgList);
 router.get("/commonGroup", group.getCommonGroup);
 module.exports = router;

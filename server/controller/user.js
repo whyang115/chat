@@ -12,25 +12,26 @@ const { localeTime } = require("../common/util");
  */
 const register = async ctx => {
   const { name, pwd, time, socketId } = ctx.request.body;
-  /**
-   * 新建用户
-   */
-  let user = new User({
-    name,
-    pwd,
-    socketId,
-    registerTime: time,
-    lastLoginTime: time
-  });
   try {
+    /**
+     * 新建用户
+     */
+    let user = new User({
+      name,
+      pwd,
+      socketId,
+      registerTime: time,
+      lastLoginTime: time
+    });
     // 判断用户是否已经存在
+
     let res = await User.findOne({ name });
     if (res) {
       ctx.body = back.userExist;
       return;
     }
     // 保存用户
-    let { id } = user;
+    let { id, avatar } = user;
 
     // 将注册用户保存至全体群中
     let group = await Group.findOne({ name: "全体群" });
@@ -53,12 +54,12 @@ const register = async ctx => {
     await user.save();
     await chat.save();
     /**
-     * 返回用户id
+     * 返回用户
      */
     ctx.status = 200;
     ctx.body = {
       ...back.success,
-      id,
+      user: { id, avatar, name, socketId },
       groupId: commonGroupId
     };
   } catch (error) {
@@ -131,8 +132,16 @@ const getUserInfo = async ctx => {
 const getChatList = async ctx => {
   const { id } = ctx.query;
   try {
-    let res = await User.findById(id).populate("chatList");
-    let { chatList } = res;
+    let { chatList } = await User.findById(id).populate("chatList");
+    let res = [];
+
+    for (let key in chatList) {
+      let item = await Chat.findById(key.id)
+        .populate("from")
+        .populate("to");
+      res.push(chatList[key].populate(from).populate(to));
+    }
+    console.log(res);
     ctx.body = {
       ...back.success,
       chatList

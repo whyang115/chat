@@ -13,11 +13,10 @@ const initSocket = io => {
       await chat.save();
       let { to } = data;
       socket.to(to).emit("chat", data);
-      socket.emit("chat", data);
     });
-    socket.on("joinGroup", ({ userId, groupId }) => {
+    socket.on("joinGroup", ({ groupId }) => {
       socket.join(groupId, () => {
-        console.log("join group success");
+        console.log(`join ${groupId} success`);
       });
     });
     // 添加好友

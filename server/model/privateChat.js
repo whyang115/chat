@@ -1,21 +1,20 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const ChatSchema = new Schema({
-  type: {
-    type: String
-  },
+const PrivateChatSchema = new Schema({
   from: {
     type: Schema.Types.ObjectId,
     ref: "User"
   },
   to: {
-    type: Schema.Types.ObjectId
+    type: Schema.Types.ObjectId,
+    ref: "User"
   },
   createTime: {
-    type: Date
+    type: Date,
+    default: Date.now()
   },
   msgList: [{ type: Schema.Types.ObjectId, ref: "Message" }]
 });
-const Chat = mongoose.model("Chat", ChatSchema);
-module.exports = Chat;
+const PrivateChat = mongoose.model("PrivateChat", ChatSchema);
+module.exports = PrivateChat;

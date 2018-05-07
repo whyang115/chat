@@ -4,12 +4,26 @@ const User = require("../model/user");
 const Back = require("../common/back");
 const getChat = async ctx => {
   let { id } = ctx.query;
-  let chat = await Chat.findById(id);
-  let { type, to, msgList } = chat;
+  let user = await User.findById(id).populate("activeChat");
+  let { type, to, _id } = user.activeChat;
   let res =
-    type === "group" ? await Group.findById(to) : await User.findById(to);
-  let { name, avatar } = res;
-  ctx.body = { ...Back.success, name, avatar, msgList };
+    type === "group"
+      ? await Group.findById(to).populate("members")
+      : await User.findById(to);
+
+  ctx.body = { ...Back.success, _id, res };
+};
+const getMsgList = async ctx => {
+  let { id } = ctx.query;
+  try {
+    let res = await Chat.findById(id).populate("msgList");
+    ctx.body = {
+      ...Back.success,
+      res
+    };
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-module.exports = { getChat };
+module.exports = { getChat, getMsgList };

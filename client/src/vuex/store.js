@@ -1,182 +1,100 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+import socket from "../common/socket";
 import { setItem, getItem } from "../common/storage";
 Vue.use(Vuex);
 
-const socket = window.io.connect("http://localhost:1105");
 const store = new Vuex.Store({
   state: {
     chatView: "chat",
-    user: {},
-    commonGroup: {
-      name: "全体群",
-      avatar:
-        "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-1/13991140.jpg"
-    },
-    chatInfo: {},
-    activeChat: {},
-    chatList: [],
-    friendList: [],
-    msgList: []
+    user: {}
   },
   mutations: {
-    loginSuccess(
-      state,
-      { id, avatar, name, activeChat, chatList, friendList }
-    ) {
-      state.user = {
-        id,
-        name,
-        avatar
-      };
-      state.activeChat = activeChat;
-      state.friendList = friendList;
-      state.chatList = chatList;
-    },
-    readStorage(state, user) {
+    /**
+     * 登录或注册成功,缓存用户信息
+     * @param {*} state
+     * @param {*} param1
+     */
+    loginSuccess(state, user) {
       state.user = user;
+      setItem("user", JSON.stringify(user));
     },
-    changeChatView(state, { view }) {
-      state.chatView = view;
+    /**
+     * 加入群组
+     */
+    joinGroup(state, { groupId }) {
+      socket.emit("joinGroup", { groupId });
     },
-    updateCommonGroup(state, args) {
-      state.commonGroup = args;
+    /**
+     * 读取缓存
+     * @param {*} state
+     * @param {*} user
+     */
+    readStorage(state, key) {
+      let val = JSON.parse(getItem(key));
+      val && (state[key] = val);
     }
   },
   actions: {
-    async userAction({ commit, dispatch }, { router, action, name, pwd }) {
-      try {
-        let res = await axios.post(`/api/${action}`, {
-          name,
-          pwd,
-          time: new Date(),
-          socketId: socket.id
-        });
-        let { id, returnCode, returnMessage, groupId } = res.data;
-        if (returnCode) {
-          await dispatch("getUserInfo", { router, id });
-          if (action === "register") {
-            socket.emit("joinGroup", { groupId });
-          }
-        } else {
-          console.log(returnMessage);
-        }
-      } catch (err) {
-        window.alert(err);
-      }
+    /**
+     * 用户操作 登录或注册
+     * @param {*} param0
+     * @param {*} param1
+     */
+    userAction({ commit, dispatch }, { action, name, pwd }) {
+      return axios.post(`/api/${action}`, {
+        name,
+        pwd,
+        time: new Date(),
+        socketId: socket.id
+      });
     },
-    async getUserInfo({ commit, dispatch }, { router, id }) {
-      let res = await axios.get("/api/user", {
+    // getUserInfo({ commit, dispatch }, { id }) {
+    //   return axios.get("/api/user", {
+    //     params: {
+    //       id
+    //     }
+    //   });
+    // },
+    getChatInfo({ state }) {
+      return axios.get("/api/chat", {
+        params: { id: state.user.id }
+      });
+    },
+    getMsgList({ state }, { id }) {
+      return axios.get("/api/msgList", {
         params: {
           id
         }
       });
-      let {
-        avatar,
-        name,
-        activeChat,
-        chatList,
-        friendList,
-        returnCode,
-        returnMessage
-      } = res.data;
-      if (returnCode) {
-        commit("loginSuccess", {
-          id,
-          avatar,
-          name,
-          activeChat,
-          chatList,
-          friendList
-        });
-        setItem("user", JSON.stringify({ id, avatar, name }));
-        await dispatch("getChatInfo", { id: activeChat._id });
-        router.push("/chat");
-      } else {
-        console.log(returnMessage);
-      }
-    },
-    async getChatInfo({ commit, state }, { id }) {
-      try {
-        let res = await axios.get("/api/chat", {
-          params: { id }
-        });
-        let { name, avatar, msgList, returnCode, returnMessage } = res.data;
-        if (returnCode) {
-          state.activeChat = Object.assign(state.activeChat, {
-            name,
-            avatar,
-            msgList
-          });
-          console.log(state);
-        } else {
-          console.log(returnMessage);
-        }
-      } catch (error) {
-        console.log(error);
-      }
     },
     getChatList({ state }) {
-      return axios.get("/api/chatList", { params: { id: state.user.id } });
+      return axios.get("/api/chatList", {
+        params: { id: state.user.id }
+      });
     },
-    sendChat({ commit, state }, { content }) {
+    sendChat({ commit, state }, { content, chatId, to }) {
       socket.emit("chat", {
         content,
-        chatId: state.activeChat._id,
-        to: state.activeChat.to,
+        chatId,
+        to,
         from: state.user,
         isShowUserInfo: false,
         sendTime: new Date()
       });
     },
     getFriends({ commit, state }) {
-      axios.get(`/friends?id=${state.user.id}`).then(res => {
-        console.log(res);
-      });
-    },
-    getCommonGroupInfo({ commit }) {
-      axios.get("/api/commonGroup").then(res => {
-        if (res.status === 200) {
-          let { avatar, name, members, messageList, id } = res.data;
-          commit("updateCommonGroup", {
-            avatar,
-            name,
-            members,
-            messageList,
-            id
-          });
+      return axios.get("/friends", {
+        params: {
+          id: state.user.id
         }
       });
     },
     createGroup({ commit }) {
-      axios.post("/api/group").then(res => console.log(res));
-    },
-    beFriend({ commit }, { id }) {
-      socket.emit("addFriend", { from: this.state.user.userId, to: id });
+      return axios.post("/api/group");
     }
   }
 });
 
-socket.on("chat", data => {
-  Notification.requestPermission(res => {
-    if (res !== "denied" && data.from.id !== store.state.user.id) {
-      let n = new Notification(`${data.from.name}向您发来一条新消息`, {
-        body: data.content,
-        tag: data.from,
-        icon: data.from.avatar
-      });
-      n.onclick = () => {
-        n.close();
-      };
-      setTimeout(() => {
-        n.close();
-      }, 2000);
-    }
-  });
-  store.state.msgList.push(data);
-});
-socket.on("addFriend", ({ from }) => {
-  console.log("一个来自" + from + "的好友请求");
-});
 export default store;

@@ -21,8 +21,7 @@ const MessageSchema = new Schema({
     required: true
   },
   from: {
-    type: Object,
-    required: true
+    type: Object
   },
   to: {
     type: Schema.Types.ObjectId

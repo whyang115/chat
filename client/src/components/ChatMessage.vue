@@ -6,12 +6,12 @@
         <li
           v-for="(msg,index) in msgList"
           :key="index"
-          :class="msg.from.id === user.id ? 'self' : 'other'"
+          :class="msg.from.id=== user.id ? 'self' : 'other'"
           ref="msgItem"
           @mouseout="hideUserInfo(index)"
         >
          <div class="avatarBox" @mouseover="showUserInfo(msg,index)" >
-          <div v-show="msg.isShowUserInfo" class="userInfo" :style="{left: userInfo.left + 'px',top: userInfo.top + 'px'}">
+          <!-- <div v-show="msg.isShowUserInfo" class="userInfo" :style="{left: userInfo.left + 'px',top: userInfo.top + 'px'}">
             <Avatar :src="msg.from.avatar" size="large"></Avatar>
             <div class="name">{{msg.from.name}}</div>
             <div class="operation">
@@ -19,7 +19,7 @@
               <div class="divideLine"></div>
               <div class="sendMsg" @click="privateChat(msg.from.id)">发送消息</div>
             </div>
-          </div>
+          </div> -->
            <Avatar :src="msg.from.avatar" />
           </div>
           <p>{{msg.content}}</p>
@@ -34,52 +34,143 @@
 </template>
 
 <script>
+import socket from "../common/socket";
+import { mapState } from "vuex";
 import { setItem, getItem } from "../common/storage";
 export default {
   data() {
     return {
       sendContent: "",
+      msgList: [],
       isShowUserInfo: false,
-      userInfo: {}
+      chatInfo: {},
+      emoijs: [
+        "😂",
+        "🙏",
+        "😄",
+        "😏",
+        "😇",
+        "😅",
+        "😌",
+        "😘",
+        "😍",
+        "🤓",
+        "😜",
+        "😎",
+        "😊",
+        "😳",
+        "🙄",
+        "😱",
+        "😒",
+        "😔",
+        "😷",
+        "👿",
+        "🤗",
+        "😩",
+        "😤",
+        "😣",
+        "😰",
+        "😴",
+        "😬",
+        "😭",
+        "👻",
+        "👍",
+        "✌️",
+        "👉",
+        "👀",
+        "🐶",
+        "🐷",
+        "😹",
+        "⚡️",
+        "🔥",
+        "🌈",
+        "🍏",
+        "⚽️",
+        "❤️",
+        "🇨🇳"
+      ]
     };
   },
   created() {
-    if (getItem("sendContent")) {
-      this.sendContent = getItem("sendContent");
-    }
+    this.getChatInfo();
+    socket.on("chat", data => {
+      Notification.requestPermission(status => {
+        if (status !== "denied" && data.from.id !== this.$store.state.user.id) {
+          let n = new Notification(`${data.from.name}向您发来一条新消息`, {
+            body: data.content,
+            tag: data.from,
+            icon: data.from.avatar
+          });
+          n.onclick = () => {
+            n.close();
+          };
+          setTimeout(() => {
+            n.close();
+          }, 2000);
+        }
+        this.msgList.push(data);
+      });
+    });
   },
   mounted() {
     this.handleScroll();
   },
-  computed: {
-    chatInfo() {
-      console.log(this.$store.state);
-      return this.$store.state.activeChat;
-    },
-    msgList() {
-      return this.$store.state.msgList;
-    },
-    user() {
-      return this.$store.state.user;
-    }
-  },
+  computed: mapState({
+    user: state => state.user
+  }),
   methods: {
+    async getChatInfo() {
+      try {
+        let { data } = await this.$store.dispatch("getChatInfo");
+        let { returnCode, returnMessage, _id } = data;
+        if (returnCode) {
+          this.chatInfo = { chatId: _id, ...data.res };
+        } else {
+          this.$Message.warning(returnMessage);
+        }
+        this.getMsgList();
+      } catch (error) {
+        this.$Message.error(error);
+      }
+    },
+    async getMsgList() {
+      try {
+        let { data } = await this.$store.dispatch("getMsgList", {
+          id: this.chatInfo.chatId
+        });
+        let { returnCode, returnMessage, res } = data;
+        if (returnCode) {
+          this.msgList = res.msgList;
+        } else {
+          this.$Message.warning(returnMessage);
+        }
+      } catch (error) {
+        this.$Message.error(error);
+      }
+    },
     sendChat() {
       if (!this.sendContent) {
         this.$Message.error("发送内容不能为空");
         return;
       }
-      this.$store.dispatch("sendChat", { content: this.sendContent });
+      this.$store.dispatch("sendChat", {
+        content: this.sendContent,
+        chatId: this.chatInfo.chatId,
+        to: this.chatInfo._id
+      });
+      this.msgList.push({
+        content: this.sendContent,
+        sendTime: new Date(),
+        from: this.user,
+        to: this.chatInfo._id,
+        isRead: false
+      });
       setTimeout(() => {
         this.handleScroll();
       }, 0);
       this.sendContent = "";
     },
-    inputChange() {
-      console.log(getItem("sendContent"));
-      setItem("sendContent", this.sendContent);
-      console.log(getItem("sendContent"));
-    },
+    inputChange() {},
     showUserInfo(msg, index) {
       let $target = this.$refs.msgItem[index];
       let $top = $target.offsetTop;
@@ -106,7 +197,6 @@ export default {
   },
   watch: {
     msgList() {
-      console.log(this.msgList);
       this.handleScroll();
     }
   }

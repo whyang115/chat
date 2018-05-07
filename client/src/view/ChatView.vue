@@ -6,12 +6,8 @@
       <chat-side></chat-side>
       <chat-message></chat-message>
     </section>
-    <section v-else-if="chatView === 'friends'" class="chat-box">
-      <!-- <friend-list></friend-list> -->
-      <chat-message></chat-message>
-    </section>
     <section v-else class="chat-box">
-      <!-- <setting></setting> -->
+      <setting></setting>
     </section>
   </div>
 </template>
@@ -22,10 +18,9 @@ import ChatMenu from "../components/ChatMenu";
 import ChatSide from "../components/ChatSide";
 import ChatMessage from "../components/ChatMessage";
 import { getItem } from "../common/storage";
-// import FriendList from "../components/FriendList";
-// import Setting from "../components/Setting";
+import Setting from "../components/Setting";
 export default {
-  components: { ChatHeader, ChatMenu, ChatSide, ChatMessage },
+  components: { ChatHeader, ChatMenu, ChatSide, ChatMessage, Setting },
   data() {
     return {};
   },
@@ -33,10 +28,6 @@ export default {
     chatView() {
       return this.$store.state.chatView;
     }
-  },
-  created() {
-    let user = JSON.parse(getItem("user"));
-    user && this.$store.commit("readStorage", user);
   }
 };
 </script>

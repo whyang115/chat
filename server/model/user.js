@@ -34,8 +34,8 @@ const UserSchema = new Schema({
     required: true
   },
   friendList: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  chatList: [{ type: Schema.Types.ObjectId, ref: "Chat" }],
-  activeChat: { type: Schema.Types.ObjectId, ref: "Chat" },
+  groupChatList: [{ type: Schema.Types.ObjectId, ref: "GroupChat" }],
+  privateChatList: [{ type: Schema.Types.ObjectId, ref: "privateChat" }],
   avatar: {
     type: String,
     default:

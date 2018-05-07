@@ -64,15 +64,29 @@ export default {
   },
   methods: {
     handleClick(ref) {
-      this.$refs[ref].validate(valid => {
+      this.$refs[ref].validate(async valid => {
         if (valid) {
           let { name, pwd } = this[ref];
-          this.$store.dispatch("userAction", {
-            router: this.$router,
-            action: this.view,
-            name,
-            pwd
-          });
+          try {
+            let res = await this.$store.dispatch("userAction", {
+              action: this.view,
+              name,
+              pwd
+            });
+            let { returnCode, returnMessage, user, groupId } = res.data;
+            if (returnCode === 1) {
+              this.$store.commit("loginSuccess", user);
+              console.log(groupId);
+              this.view === "register" &&
+                this.$store.commit("joinGroup", { groupId });
+              this.$router.push("/chat");
+              this.$Message.success("登录成功,正在为您跳转");
+            } else {
+              this.$Message.warning(returnMessage);
+            }
+          } catch (error) {
+            this.$Message.error(error);
+          }
         }
       });
     },
