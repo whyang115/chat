@@ -2,6 +2,13 @@
   <section class="chat_side">
     <header>
       <Button type="success" @click="createGroup">新建聊天</Button>
+      <div class="createGroup">
+        <div class="avatarBox">
+          <Upload action="/api/image">
+            <!-- <Button type="ghost" icon="ios-cloud-upload-outline">Upload files</Button> -->
+          </Upload>
+        </div>
+      </div>
     </header>
     <div class="control">
       <p @click="switchChatType('group')" :class="{active: 'group' === chatType}">群组聊天</p>
@@ -24,36 +31,22 @@
       </ul> -->
     </section>
     <section v-else class="chat">
-      <friend-list></friend-list>
+      <private-list></private-list>
     </section>
   </section>
 </template>
 <script>
-import FriendList from "./FriendList";
+import PrivateList from "./PrivateList";
 import GroupList from "./GroupList";
 export default {
-  components: { FriendList, GroupList },
+  components: { PrivateList, GroupList },
   data() {
     return {
       chatType: "group",
-      commonGroupInfo: {
-        name: "",
-        avatar: "",
-        id: ""
-      },
-      chatList: []
+      showCreateGroup: false
     };
   },
-  created() {
-    this.getChatList();
-  },
-
   methods: {
-    async getChatList() {
-      let { data } = await this.$store.dispatch("getChatList");
-      console.log(data);
-    },
-
     createGroup() {
       this.$store.dispatch("createGroup");
     },

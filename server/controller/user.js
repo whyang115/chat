@@ -1,8 +1,7 @@
 const User = require("../model/user.js");
 const Group = require("../model/group");
 const back = require("../common/back.js");
-const PrivateChat = require("../model/privateChat");
-const GroupChat = require("../model/groupChat");
+const Private = require("../model/private");
 const { localeTime } = require("../common/util");
 /**
  * 用户注册
@@ -24,32 +23,21 @@ const register = async ctx => {
       registerTime: time,
       lastLoginTime: time
     });
-    // 判断用户是否已经存在
 
+    // 判断用户是否已经存在
     let res = await User.findOne({ name });
     if (res) {
       ctx.body = back.userExist;
       return;
     }
-    // 保存用户
     let { id, avatar } = user;
-
-    // 将注册用户保存至全体群中
     let group = await Group.findOne({ name: "全体群" });
-    group.members.push(id);
-    await group.save();
-    let groupId = group.id;
 
-    // 将全体群聊天保存至用户的聊天列表中
-    let chat = new GroupChat({
-      from: id,
-      to: groupId,
-      createTime: time
-    });
-    let chatId = chat._id;
-    user.groupChatList.push(chatId);
+    //保存用户和全体群
+    group.members.push(id);
+    user.groupList.push(group.id);
     await user.save();
-    await chat.save();
+    await group.save();
     /**
      * 返回用户
      */
@@ -57,7 +45,7 @@ const register = async ctx => {
     ctx.body = {
       ...back.success,
       user: { id, avatar, name, socketId },
-      groupId
+      chat: { type: "group", id: group.id }
     };
   } catch (error) {
     ctx.throw(500, error);
@@ -96,53 +84,60 @@ const login = async ctx => {
   }
 };
 
-const getFriendList = async ctx => {
+const getFriends = async ctx => {
   const { id } = ctx.query;
   try {
-    let { friendList } = await User.findById(id);
-    ctx.body = { ...back.success, friendList };
+    let { friends } = await User.findById(id).populate("friends");
+    ctx.body = { ...back.success, friends };
   } catch (error) {
     console.log(error);
   }
 };
 
-const getUserInfo = async ctx => {
+const getGroupList = async ctx => {
   const { id } = ctx.query;
   try {
-    let user = await User.findById(id)
-      .populate("friendList")
-      .populate("activeChat");
-    let { avatar, name, chatList, friendList, activeChat } = user;
+    let { groupList } = await User.findById(id).populate({
+      path: "groupList",
+      populate: { path: "members msgList" }
+    });
     ctx.body = {
       ...back.success,
-      avatar,
-      name,
-      activeChat,
-      chatList,
-      friendList
-    };
-  } catch (error) {
-    console.error(error);
-  }
-};
-const getGroupChatList = async ctx => {
-  const { id } = ctx.query;
-  try {
-    let { chatList } = await User.findById(id).populate("groupChatList");
-    console.log(chatList);
-    ctx.body = {
-      ...back.success,
-      chatList
+      groupList
     };
   } catch (err) {
     console.log(err);
   }
 };
-const getPrivateChatList = async ctx => {
+const getPrivateList = async ctx => {
   const { id } = ctx.query;
   try {
-    let res = await User.findById(id).populate("privateChatList");
-    console.log(res);
+    let { privateList } = await User.findById(id).populate({
+      path: "privateList",
+      populate: { path: "msgList" }
+    });
+    ctx.body = {
+      ...back.success,
+      privateList
+    };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getChat = async ctx => {
+  const { type, id } = ctx.query;
+  try {
+    let res =
+      type === "group"
+        ? await Group.findById(id)
+            .populate("msgList")
+            .populate("members")
+        : await Private.findById(id).populate("msgList");
+    ctx.body = {
+      ...back.success,
+      res
+    };
   } catch (error) {
     console.log(error);
   }
@@ -150,8 +145,8 @@ const getPrivateChatList = async ctx => {
 module.exports = {
   register,
   login,
-  getFriendList,
-  getUserInfo,
-  getGroupChatList,
-  getPrivateChatList
+  getFriends,
+  getGroupList,
+  getPrivateList,
+  getChat
 };

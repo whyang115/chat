@@ -13,13 +13,14 @@ export default {
     return {
       iconList: [
         { id: "chatboxes", isActive: true, text: "聊天列表" },
+        { id: "person-stalker", isActive: false, text: "好友列表" },
         { id: "gear-b", isActive: false, text: "设置" }
       ]
     };
   },
   methods: {
     handleClick(index) {
-      let index2Route = { 0: "chat", 1: "setting" };
+      let index2Route = { 0: "chat", 1: "friends", 2: "setting" };
       this.$store.commit("changeChatView", { view: index2Route[index] });
       this.iconList.forEach((item, ind) => {
         if (ind === index) {

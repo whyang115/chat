@@ -6,6 +6,9 @@
       <chat-side></chat-side>
       <chat-message></chat-message>
     </section>
+    <section v-if="chatView === 'friends'" class="chat-box">
+      <friend-list></friend-list>
+    </section>
     <section v-else class="chat-box">
       <setting></setting>
     </section>
@@ -16,13 +19,25 @@
 import ChatHeader from "../components/ChatHeader";
 import ChatMenu from "../components/ChatMenu";
 import ChatSide from "../components/ChatSide";
+import FriendList from "../components/FriendList";
 import ChatMessage from "../components/ChatMessage";
 import { getItem } from "../common/storage";
 import Setting from "../components/Setting";
 export default {
-  components: { ChatHeader, ChatMenu, ChatSide, ChatMessage, Setting },
+  components: {
+    ChatHeader,
+    ChatMenu,
+    ChatSide,
+    ChatMessage,
+    FriendList,
+    Setting
+  },
   data() {
     return {};
+  },
+  created() {
+    this.$store.commit("readStorage", "user");
+    this.$store.commit("readStorage", "chat");
   },
   computed: {
     chatView() {

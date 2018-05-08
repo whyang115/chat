@@ -16,15 +16,6 @@ export default {
   data() {
     return {};
   },
-  // created() {
-  //   let user = this.$store.state.user;
-  //   if (!user) {
-  //     this.user = JSON.parse(getItem("user"));
-  //     this.$store.commit("readStorage", user);
-  //   } else {
-  //     this.user = user;
-  //   }
-  // },
   computed: mapState({
     user: state => state.user
   })

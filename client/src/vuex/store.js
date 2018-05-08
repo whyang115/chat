@@ -7,12 +7,9 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    activeChat: {
-      type: "group",
-      id: ""
-    },
     chatView: "chat",
-    user: {}
+    user: {},
+    chat: {}
   },
   mutations: {
     /**
@@ -20,15 +17,18 @@ const store = new Vuex.Store({
      * @param {*} state
      * @param {*} param1
      */
-    loginSuccess(state, user) {
+    loginSuccess(state, { user, chat }) {
       state.user = user;
+      state.chat = chat;
       setItem("user", JSON.stringify(user));
+      setItem("chat", JSON.stringify(chat));
     },
     /**
      * 加入群组
      */
-    joinGroup(state, { groupId }) {
-      socket.emit("joinGroup", { groupId });
+    joinGroup(state, { chat }) {
+      console.log(chat);
+      socket.emit("joinGroup", chat);
     },
     /**
      * 读取缓存
@@ -38,6 +38,24 @@ const store = new Vuex.Store({
     readStorage(state, key) {
       let val = JSON.parse(getItem(key));
       val && (state[key] = val);
+    },
+    /**
+     * 发送消息
+     * @param {*} param0
+     * @param {*} param1
+     */
+    sendChat(state, { content, to }) {
+      socket.emit("chat", {
+        content,
+        to,
+        chat: state.chat,
+        from: state.user,
+        isShowUserInfo: false,
+        sendTime: new Date()
+      });
+    },
+    changeChatView(state, { view }) {
+      state.chatView = view;
     }
   },
   actions: {
@@ -54,42 +72,23 @@ const store = new Vuex.Store({
         socketId: socket.id
       });
     },
-    // getUserInfo({ commit, dispatch }, { id }) {
-    //   return axios.get("/api/user", {
-    //     params: {
-    //       id
-    //     }
-    //   });
-    // },
-    getChatInfo({ state }) {
+    getChat({ state }) {
       return axios.get("/api/chat", {
+        params: state.chat
+      });
+    },
+    getGroupList({ state }) {
+      return axios.get("/api/groupList", {
         params: { id: state.user.id }
       });
     },
-    getMsgList({ state }, { id }) {
-      return axios.get("/api/msgList", {
-        params: {
-          id
-        }
-      });
-    },
-    getChatList({ state }) {
-      return axios.get("/api/chatList", {
+    getPrivateList({ state }) {
+      return axios.get("/api/privateList", {
         params: { id: state.user.id }
-      });
-    },
-    sendChat({ commit, state }, { content, chatId, to }) {
-      socket.emit("chat", {
-        content,
-        chatId,
-        to,
-        from: state.user,
-        isShowUserInfo: false,
-        sendTime: new Date()
       });
     },
     getFriends({ commit, state }) {
-      return axios.get("/friends", {
+      return axios.get("/api/friends", {
         params: {
           id: state.user.id
         }
@@ -100,5 +99,4 @@ const store = new Vuex.Store({
     }
   }
 });
-
 export default store;

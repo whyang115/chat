@@ -1,6 +1,5 @@
 const Group = require("../model/group.js");
 const Back = require("../common/back");
-const GroupChat = require("../model/groupChat");
 const getGroup = async ctx => {
   const { id } = ctx.query;
   let info = await Group.findById(id);

@@ -1,22 +1,18 @@
 module.exports = {
   success: {
     returnCode: 1,
-    returnMessage: "success"
+    returnMessage: "请求成功"
   },
   userExist: {
     returnCode: 0,
-    returnMessage: "user is been existed"
+    returnMessage: "此用户已存在,请直接登陆"
   },
   userUnExist: {
     returnCode: 0,
-    returnMessage: "user is unExist, please register first"
+    returnMessage: "用户不存在,请注册"
   },
-  databaseError: {
+  error: {
     returnCode: 0,
-    returnMessage: "database unexpected error"
-  },
-  serverError: {
-    returnCode: 0,
-    returnMessage: "server unexpected error"
+    returnMessage: ""
   }
 };

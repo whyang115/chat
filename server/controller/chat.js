@@ -1,5 +1,4 @@
-const GroupChat = require("../model/groupChat");
-const PrivateChat = require("../model/privateChat");
+const Private = require("../model/private");
 const Group = require("../model/group");
 const User = require("../model/user");
 const Back = require("../common/back");
@@ -28,7 +27,7 @@ const getGroupMsgList = async ctx => {
 const getPrivateMsgList = async ctx => {
   let { id } = ctx.query;
   try {
-    let { msgList } = await PrivateChat.findById(id).populate("msgList");
+    let { msgList } = await Private.findById(id).populate("msgList");
     console.log(msgList);
   } catch (error) {
     console.log(error);

@@ -1,23 +1,56 @@
 <template>
   <ul class="groupWrap">
-    <li v-for="group in groupList" :key="group.id">
+    <li class="list" v-for="group in groupList" :key="group.id">
       <Avatar :src="group.avatar"></Avatar>
       <div class="content">
         <div class="name">{{group.name}}</div>
-        <div class="msg">{{group.msg}}</div>
+        <div class="msg">{{getMsgCon(group)}}</div>
       </div>
+      <p class="time">{{getMsgTime(group)}}</p>
     </li>
   </ul>
 </template>
 
 <script>
+import dayjs from "dayjs";
 export default {
   name: "groupList",
   data() {
     return {
       groupList: []
     };
+  },
+  created() {
+    this.getGroupList();
+  },
+  methods: {
+    async getGroupList() {
+      try {
+        let { data } = await this.$store.dispatch("getGroupList");
+        let { returnCode, returnMessage, groupList } = data;
+        if (returnCode) {
+          this.groupList = groupList;
+        } else {
+          this.$Message.warning();
+        }
+      } catch (error) {
+        this.$Message.error(error);
+      }
+    },
+    getMsgCon(item) {
+      let len = item.msgList.length - 1;
+      return item.msgList[len].content;
+    },
+    getMsgTime(item) {
+      let len = item.msgList.length - 1;
+      let time = item.msgList[len].createTime;
+      return dayjs(time).format();
+    }
   }
 };
 </script>
+<style lang="scss" scoped>
+@import "../common/common.scss";
+</style>
+
 

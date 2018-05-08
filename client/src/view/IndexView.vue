@@ -73,12 +73,11 @@ export default {
               name,
               pwd
             });
-            let { returnCode, returnMessage, user, groupId } = res.data;
+            let { returnCode, returnMessage, user, chat } = res.data;
             if (returnCode === 1) {
-              this.$store.commit("loginSuccess", user);
-              console.log(groupId);
+              this.$store.commit("loginSuccess", { user, chat });
               this.view === "register" &&
-                this.$store.commit("joinGroup", { groupId });
+                this.$store.commit("joinGroup", { chat });
               this.$router.push("/chat");
               this.$Message.success("登录成功,正在为您跳转");
             } else {

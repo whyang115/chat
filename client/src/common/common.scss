@@ -19,3 +19,25 @@ $main: rgba(53, 152, 219, 0.8);
   bottom: 0;
   margin: auto;
 }
+li.list {
+  display: flex;
+  padding: 0.5rem 1rem;
+  .content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    margin: 0 1rem;
+    .name {
+      text-align: left;
+      font-size: 14px;
+      color: #333;
+    }
+    .msg {
+      text-align: left;
+      font-size: 12px;
+    }
+  }
+  .time {
+    align-self: center;
+  }
+}

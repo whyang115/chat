@@ -33,9 +33,6 @@ const UserSchema = new Schema({
     type: Date,
     required: true
   },
-  friendList: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  groupChatList: [{ type: Schema.Types.ObjectId, ref: "GroupChat" }],
-  privateChatList: [{ type: Schema.Types.ObjectId, ref: "privateChat" }],
   avatar: {
     type: String,
     default:
@@ -44,7 +41,10 @@ const UserSchema = new Schema({
   gender: {
     type: String,
     default: "未知"
-  }
+  },
+  friends: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  groupList: [{ type: Schema.Types.ObjectId, ref: "Group" }],
+  privateList: [{ type: Schema.Types.ObjectId, ref: "Private" }]
 });
 const User = mongoose.model("User", UserSchema);
 module.exports = User;

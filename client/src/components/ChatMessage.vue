@@ -8,10 +8,9 @@
           :key="index"
           :class="msg.from.id=== user.id ? 'self' : 'other'"
           ref="msgItem"
-          @mouseout="hideUserInfo(index)"
         >
-         <div class="avatarBox" @mouseover="showUserInfo(msg,index)" >
-          <!-- <div v-show="msg.isShowUserInfo" class="userInfo" :style="{left: userInfo.left + 'px',top: userInfo.top + 'px'}">
+          <div class="avatarBox">
+           <div v-show="msg.isShowUserInfo" class="userInfo" :style="{left: 0,top: getTop(index)}">
             <Avatar :src="msg.from.avatar" size="large"></Avatar>
             <div class="name">{{msg.from.name}}</div>
             <div class="operation">
@@ -19,9 +18,9 @@
               <div class="divideLine"></div>
               <div class="sendMsg" @click="privateChat(msg.from.id)">发送消息</div>
             </div>
-          </div> -->
-           <Avatar :src="msg.from.avatar" />
           </div>
+           <Avatar :src="msg.from.avatar" />
+           </div>
           <p>{{msg.content}}</p>
         </li>
       </ul>
@@ -41,7 +40,6 @@ export default {
   data() {
     return {
       sendContent: "",
-      msgList: [],
       isShowUserInfo: false,
       chatInfo: {},
       emoijs: [
@@ -92,8 +90,11 @@ export default {
     };
   },
   created() {
-    this.getChatInfo();
+    console.log(socket.id);
+    this.getChat();
     socket.on("chat", data => {
+      console.log(socket.id);
+      console.log(data);
       Notification.requestPermission(status => {
         if (status !== "denied" && data.from.id !== this.$store.state.user.id) {
           let n = new Notification(`${data.from.name}向您发来一条新消息`, {
@@ -116,33 +117,20 @@ export default {
     this.handleScroll();
   },
   computed: mapState({
-    user: state => state.user
+    user: state => state.user,
+    msgList() {
+      return this.chatInfo.msgList;
+    }
   }),
   methods: {
-    async getChatInfo() {
+    async getChat() {
       try {
-        let { data } = await this.$store.dispatch("getChatInfo");
-        let { returnCode, returnMessage, _id } = data;
-        if (returnCode) {
-          this.chatInfo = { chatId: _id, ...data.res };
-        } else {
-          this.$Message.warning(returnMessage);
-        }
-        this.getMsgList();
-      } catch (error) {
-        this.$Message.error(error);
-      }
-    },
-    async getMsgList() {
-      try {
-        let { data } = await this.$store.dispatch("getMsgList", {
-          id: this.chatInfo.chatId
-        });
+        let { data } = await this.$store.dispatch("getChat");
         let { returnCode, returnMessage, res } = data;
         if (returnCode) {
-          this.msgList = res.msgList;
+          this.chatInfo = res;
         } else {
-          this.$Message.warning(returnMessage);
+          this.$Message.error(returnMessage);
         }
       } catch (error) {
         this.$Message.error(error);
@@ -153,9 +141,8 @@ export default {
         this.$Message.error("发送内容不能为空");
         return;
       }
-      this.$store.dispatch("sendChat", {
+      this.$store.commit("sendChat", {
         content: this.sendContent,
-        chatId: this.chatInfo.chatId,
         to: this.chatInfo._id
       });
       this.msgList.push({
@@ -171,18 +158,20 @@ export default {
       this.sendContent = "";
     },
     inputChange() {},
-    showUserInfo(msg, index) {
-      let $target = this.$refs.msgItem[index];
-      let $top = $target.offsetTop;
-      let $scrollTop = this.$refs.chatRoom.scrollTop;
-      if (msg.userId !== this.user.userId) {
-        this.msgList[index].isShowUserInfo = true;
-      }
-      this.userInfo.top = $top - $scrollTop > 150 ? -140 : 40;
-      this.userInfo.left = 0;
-    },
+    // showUserInfo(msg, index) {
+    //   let $target = this.$refs.msgItem[index];
+    //   let $top = $target.offsetTop;
+    //   let $scrollTop = this.$refs.chatRoom.scrollTop;
+    //   if (msg.userId !== this.user.userId) {
+    //     this.msgList[index].isShowUserInfo = true;
+    //   }
+    //   this.userInfo.top = $top - $scrollTop > 150 ? -140 : 40;
+    //   this.userInfo.left = 0;
+    // },
+
+    getTop(index) {},
     hideUserInfo(index) {
-      this.msgList[index].isShowUserInfo = false;
+      // this.msgList[index].isShowUserInfo = false;
     },
     beFriend(id) {
       this.$store.dispatch("beFriend", { id });
@@ -280,7 +269,7 @@ export default {
       margin: 0 1rem;
       padding: 0.2rem 0.8rem;
       line-height: 1.5rem;
-      border-radius: 1.5rem;
+      border-radius: 0.3rem;
       position: relative;
     }
     &.other {
@@ -294,9 +283,9 @@ export default {
           height: 0;
           position: absolute;
           top: 6px;
-          left: -21px;
+          left: -19px;
           border: 10px solid transparent;
-          border-right: 15px solid #ccc;
+          border-right: 10px solid #ccc;
         }
       }
     }
@@ -306,6 +295,16 @@ export default {
       p {
         color: #fff;
         background-color: $main;
+        &::after {
+          content: "";
+          width: 0;
+          height: 0;
+          position: absolute;
+          top: 6px;
+          right: -20px;
+          border: 10px solid transparent;
+          border-left: 10px solid $main;
+        }
       }
     }
   }
