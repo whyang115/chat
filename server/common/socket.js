@@ -1,11 +1,14 @@
 const Message = require("../model/message");
 const Private = require("../model/private");
 const Group = require("../model/group.js");
+const User = require("../model/user");
 // socket连接
 const initSocket = io => {
   // socket连接
   io.on("connection", socket => {
-    socket.emit("test", { form: "server" });
+    socket.on("updateSocket", async ({ userId, socketId }) => {
+      await User.findByIdAndUpdate(userId, { socketId });
+    });
     // 聊天;
     socket.on("chat", async data => {
       console.log(socket.id);

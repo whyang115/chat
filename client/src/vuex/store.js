@@ -1,9 +1,10 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
-import socket from "../common/socket";
 import { setItem, getItem } from "../common/storage";
 Vue.use(Vuex);
+
+const socket = window.io.connect("http://localhost:1105");
 
 const store = new Vuex.Store({
   state: {
@@ -56,6 +57,13 @@ const store = new Vuex.Store({
     },
     changeChatView(state, { view }) {
       state.chatView = view;
+    },
+    updateSocket(state, { socketId }) {
+      state.user.socketId = socketId;
+      socket.emit("updateSocket", {
+        userId: state.user.id,
+        socketId: socketId
+      });
     }
   },
   actions: {
@@ -99,4 +107,31 @@ const store = new Vuex.Store({
     }
   }
 });
+socket.on("connect", a => {
+  console.log(a, socket.id);
+  if (store.state.user.socketId && store.state.user.socketId !== socket.id) {
+    store.commit("updateSocket", { socketId: socket.id });
+  }
+});
+socket.on("chat", data => {
+  console.log(socket.id);
+  console.log(data);
+  Notification.requestPermission(status => {
+    if (status !== "denied" && data.from.id !== this.$store.state.user.id) {
+      let n = new Notification(`${data.from.name}向您发来一条新消息`, {
+        body: data.content,
+        tag: data.from,
+        icon: data.from.avatar
+      });
+      n.onclick = () => {
+        n.close();
+      };
+      setTimeout(() => {
+        n.close();
+      }, 2000);
+    }
+    this.msgList.push(data);
+  });
+});
+
 export default store;

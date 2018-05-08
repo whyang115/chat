@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import socket from "../common/socket";
 import { mapState } from "vuex";
 import { setItem, getItem } from "../common/storage";
 export default {
@@ -90,28 +89,7 @@ export default {
     };
   },
   created() {
-    console.log(socket.id);
     this.getChat();
-    socket.on("chat", data => {
-      console.log(socket.id);
-      console.log(data);
-      Notification.requestPermission(status => {
-        if (status !== "denied" && data.from.id !== this.$store.state.user.id) {
-          let n = new Notification(`${data.from.name}向您发来一条新消息`, {
-            body: data.content,
-            tag: data.from,
-            icon: data.from.avatar
-          });
-          n.onclick = () => {
-            n.close();
-          };
-          setTimeout(() => {
-            n.close();
-          }, 2000);
-        }
-        this.msgList.push(data);
-      });
-    });
   },
   mounted() {
     this.handleScroll();

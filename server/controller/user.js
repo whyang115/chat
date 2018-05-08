@@ -66,15 +66,14 @@ const login = async ctx => {
 
     if (res) {
       let { id, avatar } = res;
-      let chat = await Chat.find({ from: id }).sort({ _id: -1 });
-      let firstChat = chat[0];
+      let group = await Group.findOne({ name: "全体群" });
       ctx.body = {
         ...back.success,
-        userId: id,
-        name,
-        avatar,
-        chatType: firstChat.type,
-        chatId: firstChat.to
+        user: { id, avatar, name, socketId },
+        chat: {
+          type: "group",
+          id: group.id
+        }
       };
     } else {
       ctx.body = back.userUnExist;

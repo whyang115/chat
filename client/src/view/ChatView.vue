@@ -21,7 +21,6 @@ import ChatMenu from "../components/ChatMenu";
 import ChatSide from "../components/ChatSide";
 import FriendList from "../components/FriendList";
 import ChatMessage from "../components/ChatMessage";
-import { getItem } from "../common/storage";
 import Setting from "../components/Setting";
 export default {
   components: {
