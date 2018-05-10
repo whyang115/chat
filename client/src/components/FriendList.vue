@@ -3,12 +3,12 @@
         <li
           class="list"
           v-for="item in friends"
-          :key = item.userId
+          :key = "item.id"
         >
-          <Avatar :src="friends.avatar"></Avatar>
+          <Avatar :src="item.avatar"></Avatar>
           <div class="content">
-            <div class="date"></div>
-            <div class="msg"></div>
+            <p class="name">{{item.name}}</p>
+            p.
           </div>
         </li>
       </ul>
@@ -32,8 +32,17 @@ export default {
   },
   methods: {
     async getFriends() {
-      let { data } = await this.$store.dispatch("getFriends");
-      let { returnCode, returnMessage } = data;
+      try {
+        let { data } = await this.$store.dispatch("getFriends");
+        let { returnCode, returnMessage, friends } = data;
+        if (returnCode) {
+          this.friends = friends;
+        } else {
+          this.$Message.warning(returnMessage);
+        }
+      } catch (error) {
+        this.$Message.error(error);
+      }
     }
   }
 };

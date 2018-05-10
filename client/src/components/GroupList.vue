@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import dayjs from "dayjs";
+import moment from "moment";
+moment.locale("zh-cn");
 export default {
   name: "groupList",
   data() {
@@ -38,13 +39,17 @@ export default {
       }
     },
     getMsgCon(item) {
-      let len = item.msgList.length - 1;
-      return item.msgList[len].content;
+      if (item.msgList.length) {
+        let len = item.msgList.length - 1;
+        return item.msgList[len].content;
+      }
     },
     getMsgTime(item) {
-      let len = item.msgList.length - 1;
-      let time = item.msgList[len].createTime;
-      return dayjs(time).format();
+      if (item.msgList.length) {
+        let len = item.msgList.length - 1;
+        let time = item.msgList[len].createTime;
+        return `${moment(time).fromNow(true)}前`;
+      }
     }
   }
 };

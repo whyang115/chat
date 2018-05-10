@@ -1,7 +1,7 @@
 <template>
   <section class="chat-content">
-        <section class="chat-room">
-      <h3>{{chatInfo.name}}</h3>
+    <section class="chat-room">
+      <h3 >{{chatInfo.name}}</h3>
       <ul ref="chatRoom">
         <li
           v-for="(msg,index) in msgList"
@@ -9,14 +9,12 @@
           :class="msg.from.id=== user.id ? 'self' : 'other'"
           ref="msgItem"
         >
-          <div class="avatarBox">
-           <div v-show="msg.isShowUserInfo" class="userInfo" :style="{left: 0,top: getTop(index)}">
+          <div class="avatarBox" @mouseover="onUserInfoHover(msg,index)" @mouseout="onUserInfoOut(msg,index)">
+           <div class="userInfo" v-show="msg.isShowUserInfo" :style="userInfoStyle">
             <Avatar :src="msg.from.avatar" size="large"></Avatar>
             <div class="name">{{msg.from.name}}</div>
             <div class="operation">
-              <div class="beFriend" @click="beFriend(msg.from.id)">加为好友</div>
-              <div class="divideLine"></div>
-              <div class="sendMsg" @click="privateChat(msg.from.id)">发送消息</div>
+              <div class="beFriend" @click="addFriend(msg,index)">加为好友</div>
             </div>
           </div>
            <Avatar :src="msg.from.avatar" />
@@ -26,7 +24,11 @@
       </ul>
     </section>
     <section class="chat-input" @keydown.enter="sendChat">
-      <input v-model=sendContent @change="inputChange" placeholder="请输入你想说的话 ~ ~" />
+        <Icon type="android-happy" class="icon-emoij" @click.native="showEmoij = !showEmoij"></Icon>
+        <ul class="emoijWrap" v-show="showEmoij">
+          <li v-for="emoij in emoijs" @click="addEmoij(emoij)">{{emoij}}</li>
+        </ul>
+      <input v-model=sendContent @change="inputChange" @focus="showEmoij = false" placeholder="请输入你想说的话 ~ ~" />
       <Icon type="android-send" class="icon-send" @click.native="sendChat"></Icon>
     </section>
   </section>
@@ -39,8 +41,9 @@ export default {
   data() {
     return {
       sendContent: "",
-      isShowUserInfo: false,
+      userInfoStyle: { left: 0 },
       chatInfo: {},
+      showEmoij: false,
       emoijs: [
         "😂",
         "🙏",
@@ -96,9 +99,7 @@ export default {
   },
   computed: mapState({
     user: state => state.user,
-    msgList() {
-      return this.chatInfo.msgList;
-    }
+    msgList: state => state.msgList
   }),
   methods: {
     async getChat() {
@@ -107,6 +108,7 @@ export default {
         let { returnCode, returnMessage, res } = data;
         if (returnCode) {
           this.chatInfo = res;
+          this.$store.commit("updateMsgList", res.msgList);
         } else {
           this.$Message.error(returnMessage);
         }
@@ -123,39 +125,34 @@ export default {
         content: this.sendContent,
         to: this.chatInfo._id
       });
-      this.msgList.push({
-        content: this.sendContent,
-        sendTime: new Date(),
-        from: this.user,
-        to: this.chatInfo._id,
-        isRead: false
-      });
+
       setTimeout(() => {
         this.handleScroll();
       }, 0);
       this.sendContent = "";
     },
+    onUserInfoHover(msg, index) {
+      let $target = this.$refs.msgItem[index];
+      let $top = $target.offsetTop;
+      let $height = this.$refs.chatRoom.offsetHeight;
+      let $scrollTop = this.$refs.chatRoom.scrollTop;
+      if (msg.from.id !== this.$store.state.user.id) {
+        this.msgList[index].isShowUserInfo = true;
+      }
+      let top = $top - $scrollTop > 240 ? -156 : 40;
+      this.userInfoStyle = { left: 0, top: top + "px" };
+    },
+    onUserInfoOut(msg, index) {
+      console.log("out");
+      this.msgList[index].isShowUserInfo = false;
+    },
+    addEmoij(emoij) {
+      this.sendContent += emoij;
+    },
     inputChange() {},
-    // showUserInfo(msg, index) {
-    //   let $target = this.$refs.msgItem[index];
-    //   let $top = $target.offsetTop;
-    //   let $scrollTop = this.$refs.chatRoom.scrollTop;
-    //   if (msg.userId !== this.user.userId) {
-    //     this.msgList[index].isShowUserInfo = true;
-    //   }
-    //   this.userInfo.top = $top - $scrollTop > 150 ? -140 : 40;
-    //   this.userInfo.left = 0;
-    // },
-
-    getTop(index) {},
-    hideUserInfo(index) {
-      // this.msgList[index].isShowUserInfo = false;
-    },
-    beFriend(id) {
-      this.$store.dispatch("beFriend", { id });
-    },
-    privateChat(id) {
-      this.$store.dispatch("privateChat", { id });
+    addFriend(msg, index) {
+      this.$store.commit("addFriend", { to: msg.from.id });
+      this.onUserInfoOut(msg, index);
     },
     handleScroll() {
       let $target = this.$refs.chatRoom;
@@ -290,6 +287,8 @@ export default {
 
 .chat-input {
   position: relative;
+  display: flex;
+  align-items: center;
   height: 48px;
   .icon-send {
     position: absolute;
@@ -301,6 +300,14 @@ export default {
       color: $main;
     }
   }
+  .icon-emoij {
+    font-size: 1.5rem;
+    cursor: pointer;
+    &:hover {
+      color: $main;
+    }
+    margin-left: 1rem;
+  }
   input {
     width: 100%;
     height: 48px;
@@ -308,6 +315,28 @@ export default {
     border: none;
     outline: none;
     border-radius: 0.5rem;
+  }
+}
+
+.emoijWrap {
+  position: absolute;
+  top: -145px;
+  left: 0;
+  max-width: 40rem;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #fff;
+  border: 1px solid #eee;
+  box-shadow: 1px 1px 1px 1px #ddd;
+  padding: 0.5rem;
+  li {
+    font-size: 1.5rem;
+    padding: 0.2rem;
+    cursor: pointer;
+  }
+  &::after {
+    content: "";
+    position: absolute;
   }
 }
 </style>

@@ -5,12 +5,16 @@ import { setItem, getItem } from "../common/storage";
 Vue.use(Vuex);
 
 const socket = window.io.connect("http://localhost:1105");
-
+Vue.prototype.$socket = socket;
+console.log(Vue);
 const store = new Vuex.Store({
   state: {
     chatView: "chat",
+    socket: {},
     user: {},
-    chat: {}
+    chat: {},
+    msgList: [],
+    showAddFriendModel: false
   },
   mutations: {
     /**
@@ -25,11 +29,10 @@ const store = new Vuex.Store({
       setItem("chat", JSON.stringify(chat));
     },
     /**
-     * 加入群组
+     * 浏览器刷新时socket重连 群组需要重新加入
      */
-    joinGroup(state, { chat }) {
-      console.log(chat);
-      socket.emit("joinGroup", chat);
+    joinGroup(state) {
+      socket.emit("joinGroup", { id: state.user.id });
     },
     /**
      * 读取缓存
@@ -52,6 +55,16 @@ const store = new Vuex.Store({
         chat: state.chat,
         from: state.user,
         isShowUserInfo: false,
+        isRead: false,
+        sendTime: new Date()
+      });
+      state.msgList.push({
+        content,
+        to,
+        chat: state.chat,
+        from: state.user,
+        isShowUserInfo: false,
+        isRead: false,
         sendTime: new Date()
       });
     },
@@ -63,6 +76,14 @@ const store = new Vuex.Store({
       socket.emit("updateSocket", {
         userId: state.user.id,
         socketId: socketId
+      });
+    },
+    updateMsgList(state, msgList) {
+      state.msgList = msgList;
+    },
+    addFriend(state, { to }) {
+      socket.emit("addFriend", { from: state.user, to }, status => {
+        console.log(status);
       });
     }
   },
@@ -109,15 +130,15 @@ const store = new Vuex.Store({
 });
 socket.on("connect", a => {
   console.log(a, socket.id);
+  store.state.socket = socket;
   if (store.state.user.socketId && store.state.user.socketId !== socket.id) {
     store.commit("updateSocket", { socketId: socket.id });
   }
 });
 socket.on("chat", data => {
   console.log(socket.id);
-  console.log(data);
   Notification.requestPermission(status => {
-    if (status !== "denied" && data.from.id !== this.$store.state.user.id) {
+    if (status !== "denied" && data.from.id !== store.state.user.id) {
       let n = new Notification(`${data.from.name}向您发来一条新消息`, {
         body: data.content,
         tag: data.from,
@@ -130,8 +151,11 @@ socket.on("chat", data => {
         n.close();
       }, 2000);
     }
-    this.msgList.push(data);
+    store.state.msgList.push(data);
   });
 });
+// socket.on("addFriend", data => {
+//   console.log(data);
+// });
 
 export default store;

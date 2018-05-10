@@ -2,6 +2,14 @@
   <div class="chat-view">
     <chat-header></chat-header>
     <chat-menu></chat-menu>
+    <Modal
+      v-model="showAddFriend"
+      @on-ok="accept"
+      @on-cancel="refuse"
+    >
+      <Avatar :src="from.avatar"></Avatar>
+      <p>{{from.name}}请求加您为好友,是否同意</p>
+    </Modal>
     <section v-if="chatView === 'chat'" class="chat-box">
       <chat-side></chat-side>
       <chat-message></chat-message>
@@ -32,15 +40,37 @@ export default {
     Setting
   },
   data() {
-    return {};
+    return {
+      showAddFriend: false,
+      isAccept: null,
+      from: {}
+    };
   },
   created() {
+    console.log(this.$socket);
+    this.$socket.on("addFriend", ({ from }) => {
+      this.from = from;
+      this.showAddFriend = true;
+    });
     this.$store.commit("readStorage", "user");
     this.$store.commit("readStorage", "chat");
+    this.$store.commit("joinGroup");
   },
   computed: {
     chatView() {
       return this.$store.state.chatView;
+    }
+  },
+  methods: {
+    accept() {
+      this.showAddFriend = false;
+      this.isAccept = true;
+      this.$Message.success("已同意");
+    },
+    refuse() {
+      this.showAddFriend = false;
+      this.isAccept = false;
+      this.$Message.warning("已拒绝");
     }
   }
 };

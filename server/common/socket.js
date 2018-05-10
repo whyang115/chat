@@ -23,14 +23,20 @@ const initSocket = io => {
       let { to } = data;
       socket.to(to).emit("chat", msg);
     });
-    socket.on("joinGroup", ({ id }) => {
-      socket.join(id, () => {
-        console.log(`join ${id} success`);
+    socket.on("joinGroup", async ({ id }) => {
+      let { groupList } = await User.findById(id).populate("groupList");
+      groupList.forEach(item => {
+        socket.join(item.id, () => {
+          console.log(`${id} joined ${item.id} success`);
+        });
       });
     });
     // 添加好友
-    socket.on("addFriend", ({ from, to }) => {
-      socket.to(to).emit("addFriend", { from });
+    socket.on("addFriend", async ({ from, to }) => {
+      let { socketId } = await User.findById(to);
+      socket.to(socketId).emit("addFriend", { from }, data => {
+        console.log(data);
+      });
     });
 
     socket.on("disconnection", () => {
