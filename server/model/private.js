@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const PrivateSchema = new Schema({
+  name: { type: String },
   from: {
     type: Schema.Types.ObjectId,
     ref: "User"

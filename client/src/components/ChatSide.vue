@@ -16,19 +16,6 @@
     </div>
     <section v-if="chatType === 'group'" class="chat">
      <group-list></group-list>
-      <!-- <ul>
-        <li v-for="(chat,index) in chatList" :key="index">
-          <Avatar :src="chat.avatar"></Avatar>
-          <section class="content">
-            <p class="name">{{chat.name}}</p>
-            <p class="last_msg">{{chat.lastMsg}}</p>
-          </section>
-          <section class="info">
-            <Badge :count=chat.newMsgCount overflow-count="99"></Badge>
-            <p class="time">{{chat.timeAgo}}</p>
-          </section>
-        </li>
-      </ul> -->
     </section>
     <section v-else class="chat">
       <private-list></private-list>

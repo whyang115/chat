@@ -8,6 +8,7 @@ const router = new Router({
 router.post("/register", user.register);
 router.post("/login", user.login);
 router.post("/group", group.createGroup);
+router.get("/user", user.getUserInfo);
 router.get("/group", group.getGroup);
 router.get("/friends", user.getFriends);
 router.get("/groupList", user.getGroupList);

@@ -19,6 +19,10 @@ const GroupSchema = new Schema({
     type: Date,
     default: new Date().toLocaleString()
   },
+  announcement: {
+    type: String,
+    default: "群公告"
+  },
   members: [{ type: Schema.Types.ObjectId, ref: "User" }],
   msgList: [{ type: Schema.Types.ObjectId, ref: "Message" }]
 });

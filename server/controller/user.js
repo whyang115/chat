@@ -98,7 +98,12 @@ const getGroupList = async ctx => {
   try {
     let { groupList } = await User.findById(id).populate({
       path: "groupList",
-      populate: { path: "members msgList" }
+      populate: {
+        path: "msgList members",
+        populate: {
+          path: "from to"
+        }
+      }
     });
     ctx.body = {
       ...back.success,
@@ -113,7 +118,7 @@ const getPrivateList = async ctx => {
   try {
     let { privateList } = await User.findById(id).populate({
       path: "privateList",
-      populate: { path: "msgList" }
+      populate: { path: "from to msgList" }
     });
     ctx.body = {
       ...back.success,
@@ -130,13 +135,36 @@ const getChat = async ctx => {
     let res =
       type === "group"
         ? await Group.findById(id)
-            .populate("msgList")
+            .populate({ path: "msgList", populate: { path: "from to" } })
             .populate("members")
-        : await Private.findById(id).populate("msgList");
+        : await Private.findById(id).populate({
+            path: "msgList",
+            populate: { path: "from to" }
+          });
     ctx.body = {
       ...back.success,
       res
     };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getUserInfo = async ctx => {
+  let { id } = ctx.query;
+  try {
+    let user = await User.findById(id);
+    if (user) {
+      ctx.body = {
+        ...back.success,
+        user
+      };
+    } else {
+      ctx.body = {
+        ...back.error,
+        returnMessage: "用户信息获取出错,请稍后再试"
+      };
+    }
   } catch (error) {
     console.log(error);
   }
@@ -147,5 +175,6 @@ module.exports = {
   getFriends,
   getGroupList,
   getPrivateList,
-  getChat
+  getChat,
+  getUserInfo
 };

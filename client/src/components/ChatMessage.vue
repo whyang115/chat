@@ -6,7 +6,7 @@
         <li
           v-for="(msg,index) in msgList"
           :key="index"
-          :class="msg.from.id=== user.id ? 'self' : 'other'"
+          :class="msg.from._id === user.id ? 'self' : 'other'"
           ref="msgItem"
         >
           <div class="avatarBox" @mouseover="onUserInfoHover(msg,index)" @mouseout="onUserInfoOut(msg,index)">
@@ -93,14 +93,41 @@ export default {
   },
   created() {
     this.getChat();
+    console.log(this.user);
+    this.$socket.on("chat", data => {
+      Notification.requestPermission(status => {
+        if (
+          status !== "denied" &&
+          data.from._id !== this.$store.state.user.id
+        ) {
+          let n = new Notification(`${data.from.name}向您发来一条新消息`, {
+            body: data.content,
+            tag: data.from,
+            icon: data.from.avatar
+          });
+          n.onclick = () => {
+            n.close();
+          };
+          setTimeout(() => {
+            n.close();
+          }, 2000);
+        }
+        this.msgList.push(data);
+      });
+    });
   },
   mounted() {
     this.handleScroll();
   },
-  computed: mapState({
-    user: state => state.user,
-    msgList: state => state.msgList
-  }),
+  computed: {
+    msgList() {
+      return this.chatInfo.msgList;
+    },
+    ...mapState({
+      user: state => state.user,
+      chat: state => state.chat
+    })
+  },
   methods: {
     async getChat() {
       try {
@@ -108,7 +135,6 @@ export default {
         let { returnCode, returnMessage, res } = data;
         if (returnCode) {
           this.chatInfo = res;
-          this.$store.commit("updateMsgList", res.msgList);
         } else {
           this.$Message.error(returnMessage);
         }
@@ -123,7 +149,7 @@ export default {
       }
       this.$store.commit("sendChat", {
         content: this.sendContent,
-        to: this.chatInfo._id
+        to: this.chat.type === "group" ? this.chatInfo._id : this.chatInfo.to
       });
 
       setTimeout(() => {
@@ -136,7 +162,7 @@ export default {
       let $top = $target.offsetTop;
       let $height = this.$refs.chatRoom.offsetHeight;
       let $scrollTop = this.$refs.chatRoom.scrollTop;
-      if (msg.from.id !== this.$store.state.user.id) {
+      if (msg.from._id !== this.user.id) {
         this.msgList[index].isShowUserInfo = true;
       }
       let top = $top - $scrollTop > 240 ? -156 : 40;
@@ -151,7 +177,7 @@ export default {
     },
     inputChange() {},
     addFriend(msg, index) {
-      this.$store.commit("addFriend", { to: msg.from.id });
+      this.$store.commit("addFriend", { to: msg.from._id });
       this.onUserInfoOut(msg, index);
     },
     handleScroll() {
@@ -160,6 +186,9 @@ export default {
     }
   },
   watch: {
+    chat() {
+      this.getChat();
+    },
     msgList() {
       this.handleScroll();
     }

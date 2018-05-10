@@ -21,7 +21,7 @@ export default {
   methods: {
     handleClick(index) {
       let index2Route = { 0: "chat", 1: "friends", 2: "setting" };
-      this.$store.commit("changeChatView", { view: index2Route[index] });
+      this.$store.commit("changeView", { view: index2Route[index] });
       this.iconList.forEach((item, ind) => {
         if (ind === index) {
           item.isActive = true;

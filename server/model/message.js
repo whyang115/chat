@@ -21,7 +21,8 @@ const MessageSchema = new Schema({
     required: true
   },
   from: {
-    type: Object
+    type: Schema.Types.ObjectId,
+    ref: "User"
   },
   to: {
     type: Schema.Types.ObjectId

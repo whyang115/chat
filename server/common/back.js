@@ -12,7 +12,6 @@ module.exports = {
     returnMessage: "用户不存在,请注册"
   },
   error: {
-    returnCode: 0,
-    returnMessage: ""
+    returnCode: 0
   }
 };

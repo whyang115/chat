@@ -42,6 +42,10 @@ const UserSchema = new Schema({
     type: String,
     default: "未知"
   },
+  signature: {
+    type: String,
+    default: "个人签名"
+  },
   friends: [{ type: Schema.Types.ObjectId, ref: "User" }],
   groupList: [{ type: Schema.Types.ObjectId, ref: "Group" }],
   privateList: [{ type: Schema.Types.ObjectId, ref: "Private" }]
