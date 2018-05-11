@@ -38,6 +38,7 @@ export default {
       this.$store.dispatch("createGroup");
     },
     switchChatType(type) {
+      console.log(type);
       this.chatType = type;
     }
   }

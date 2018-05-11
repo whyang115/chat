@@ -26,7 +26,7 @@
     <section class="chat-input" @keydown.enter="sendChat">
         <Icon type="android-happy" class="icon-emoij" @click.native="showEmoij = !showEmoij"></Icon>
         <ul class="emoijWrap" v-show="showEmoij">
-          <li v-for="emoij in emoijs" @click="addEmoij(emoij)">{{emoij}}</li>
+          <li v-for="emoij in emoijs" :key="emoij" @click="addEmoij(emoij)">{{emoij}}</li>
         </ul>
       <input v-model=sendContent @change="inputChange" @focus="showEmoij = false" placeholder="请输入你想说的话 ~ ~" />
       <Icon type="android-send" class="icon-send" @click.native="sendChat"></Icon>

@@ -2,10 +2,7 @@
   <section>
     <div class="info">
       <ul>
-        <li v-for="(item,index) in userInfo">
 
-          <span>{{item.key}}</span>
-        </li>
       </ul>
     </div>
     <div class="setting">

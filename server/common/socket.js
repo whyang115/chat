@@ -7,31 +7,44 @@ const mongoose = require("mongoose");
 const initSocket = io => {
   // socket连接
   io.on("connection", socket => {
+    /**
+     * 更新用户socketId
+     */
     socket.on("updateSocket", async ({ userId, socketId }) => {
       await User.findByIdAndUpdate(userId, { socketId });
     });
     // 聊天;
     socket.on("chat", async data => {
       let msg = new Message(data);
-      let chat, sendMsg;
+      let sendMsg;
+      let { to } = data;
       await msg.save();
       if (data.chat.type === "group") {
-        chat = await Group.findById(data.to);
+        let group = await Group.findById(data.to);
         sendMsg = await Message.findById(msg.id)
           .populate({ path: "from" })
           .populate({ path: "to", model: "Group" });
+        group.msgList.push(msg.id);
+        await group.save();
       } else {
-        chat = await Private.findById(data.chatId);
+        let fromPrivate = await Private.findById(data.chat.id);
+        let toPrivate = await Private.findOne({
+          from: mongoose.Types.ObjectId(to)
+        });
         sendMsg = await Message.findById(msg.id)
           .populate({ path: "from" })
           .populate({ path: "to", model: "User" });
+        fromPrivate.msgList.push(msg.id);
+        toPrivate.msgList.push(msg.id);
+        await fromPrivate.save();
+        await toPrivate.save();
       }
-      chat.msgList.push(msg.id);
-      await chat.save();
-      let { to } = data;
       socket.to(to).emit("chat", sendMsg);
       socket.emit("chat", sendMsg);
     });
+    /**
+     * 加入群组
+     */
     socket.on("joinGroup", async ({ id }) => {
       let { groupList } = await User.findById(id).populate("groupList");
       groupList.forEach(item => {
@@ -51,6 +64,9 @@ const initSocket = io => {
       let { socketId } = await User.findById(to);
       socket.to(socketId).emit("addFriend", { from });
     });
+    /**
+     * 添加好友结果
+     */
     socket.on("addFriendRes", async ({ from, to, isAccept }) => {
       let fromUser = await User.findById(from.id);
       let toUser = await User.findById(to.id);

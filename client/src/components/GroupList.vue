@@ -29,8 +29,10 @@ export default {
       try {
         let { data } = await this.$store.dispatch("getGroupList");
         let { returnCode, returnMessage, groupList } = data;
+        let { _id } = groupList && groupList[0];
         if (returnCode) {
           this.groupList = groupList;
+          this.$store.commit("changeChat", { type: "group", id: _id });
         } else {
           this.$Message.warning();
         }
