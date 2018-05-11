@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const initSocket = io => {
   // socket连接
   io.on("connection", socket => {
+    let user = User.find;
+    socket.join();
     /**
      * 更新用户socketId
      */
@@ -16,7 +18,7 @@ const initSocket = io => {
     // 聊天;
     socket.on("chat", async data => {
       let msg = new Message(data);
-      let sendMsg;
+      let sendMsg, socketId;
       let { to } = data;
       await msg.save();
       if (data.chat.type === "group") {
@@ -26,6 +28,7 @@ const initSocket = io => {
           .populate({ path: "to", model: "Group" });
         group.msgList.push(msg.id);
         await group.save();
+        socket.to(to).emit("chat", sendMsg);
       } else {
         let fromPrivate = await Private.findById(data.chat.id);
         let toPrivate = await Private.findOne({
@@ -38,20 +41,24 @@ const initSocket = io => {
         toPrivate.msgList.push(msg.id);
         await fromPrivate.save();
         await toPrivate.save();
+        let res = await User.findById(to);
+        console.log(res);
+        socketId = await User.findById(to).socketId;
+        socket.to(socketId).emit("chat", sendMsg);
       }
-      socket.to(to).emit("chat", sendMsg);
       socket.emit("chat", sendMsg);
     });
     /**
      * 加入群组
      */
     socket.on("joinGroup", async ({ id }) => {
-      let { groupList } = await User.findById(id).populate("groupList");
-      groupList.forEach(item => {
-        socket.join(item.id, () => {
-          console.log(`${id} joined ${item.id} success`);
-        });
-      });
+      socket.join(id);
+      // let { groupList } = await User.findById(id).populate("groupList");
+      // groupList.forEach(item => {
+      //   socket.join(item.id, () => {
+      //     console.log(`${id} joined ${item.id} success`);
+      //   });
+      // });
     });
     // 添加好友
     socket.on("addFriend", async ({ from, to }) => {
