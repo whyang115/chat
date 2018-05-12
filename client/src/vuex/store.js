@@ -26,6 +26,7 @@ const store = new Vuex.Store({
       state.chat = chat;
       setItem("user", JSON.stringify(user));
       setItem("chat", JSON.stringify(chat));
+      socket.emit("joinSelf", { id: store.state.user.id });
     },
     /**
      * 浏览器刷新时socket重连 群组需要重新加入
@@ -162,10 +163,7 @@ const store = new Vuex.Store({
  * 浏览器重连时 更新用户socketId
  */
 socket.on("connect", () => {
-  store.state.socket = socket;
-  if (store.state.user.socketId && store.state.user.socketId !== socket.id) {
-    store.commit("updateSocket", { socketId: socket.id });
-  }
+  socket.emit("joinSelf", { id: store.state.user.id });
 });
 
 export default store;

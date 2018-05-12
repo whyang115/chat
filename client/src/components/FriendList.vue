@@ -1,14 +1,16 @@
 <template>
-      <ul v-if="haveFriends">
+      <ul class="friendList" v-if="haveFriends">
         <li
           class="list"
           v-for="item in friends"
           :key = "item.id"
+          @click="getUserInfo"
+          data-id="item.id"
         >
           <Avatar :src="item.avatar"></Avatar>
           <div class="content">
             <p class="name">{{item.name}}</p>
-            p.
+            <p class="signature">{{item.signature}}</p>
           </div>
         </li>
       </ul>
@@ -43,15 +45,20 @@ export default {
       } catch (error) {
         this.$Message.error(error);
       }
+    },
+    getFriendInfo() {
+      this.$store.dispatch("getFriendInfo", id);
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+@import "../common/common.scss";
 ul {
   height: 100%;
-  width: 18rem;
+  max-width: 18rem;
+  margin-left: 2rem;
   background-color: #fff;
 }
 </style>

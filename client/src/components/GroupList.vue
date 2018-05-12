@@ -22,6 +22,9 @@ export default {
     };
   },
   created() {
+    this.$socket.on("chat", data => {
+      console.log(data);
+    });
     this.getGroupList();
   },
   methods: {

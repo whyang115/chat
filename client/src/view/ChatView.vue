@@ -25,6 +25,7 @@
     </section>
     <section v-if="view === 'friends'" class="chat-box">
       <friend-list></friend-list>
+      <friend-info></friend-info>
     </section>
     <section v-else class="chat-box">
       <setting></setting>
@@ -37,6 +38,7 @@ import ChatHeader from "../components/ChatHeader";
 import ChatMenu from "../components/ChatMenu";
 import ChatSide from "../components/ChatSide";
 import FriendList from "../components/FriendList";
+import FriendInfo from "../components/FriendInfo";
 import ChatMessage from "../components/ChatMessage";
 import Setting from "../components/Setting";
 import { mapState } from "vuex";
@@ -47,6 +49,7 @@ export default {
     ChatSide,
     ChatMessage,
     FriendList,
+    FriendInfo,
     Setting
   },
   data() {
@@ -136,7 +139,6 @@ export default {
   margin: 5rem 3rem 0 3rem;
   padding-top: 1rem;
   display: flex;
-  justify-content: space-around;
   height: 85%;
 }
 </style>

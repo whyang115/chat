@@ -27,6 +27,7 @@ $main: rgba(53, 152, 219, 0.8);
 li.list {
   display: flex;
   padding: 0.5rem 1rem;
+  cursor: pointer;
   .content {
     display: flex;
     flex-direction: column;

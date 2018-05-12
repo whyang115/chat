@@ -1,7 +1,7 @@
 <template>
   <section class="chat-content">
     <section class="chat-room">
-      <h3 >{{chatInfo.name}}</h3>
+      <h3 >{{chatName}}</h3>
       <ul ref="chatRoom">
         <li
           v-for="(msg,index) in msgList"
@@ -93,7 +93,6 @@ export default {
   },
   created() {
     this.getChat();
-    console.log(this.user);
     this.$socket.on("chat", data => {
       Notification.requestPermission(status => {
         if (
@@ -122,6 +121,20 @@ export default {
   computed: {
     msgList() {
       return this.chatInfo.msgList;
+    },
+    chatName() {
+      let { from, to } = this.chatInfo;
+      let { id } = this.user;
+      console.log(this.chatInfo);
+      if (this.chat.type === "private" && from) {
+        if (from._id === id) {
+          return this.chatInfo.to.name;
+        } else {
+          return this.chatInfo.from.name;
+        }
+      } else {
+        return this.chatInfo.name;
+      }
     },
     ...mapState({
       user: state => state.user,

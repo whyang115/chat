@@ -3,6 +3,7 @@ const Group = require("../model/group");
 const back = require("../common/back.js");
 const Private = require("../model/private");
 const { localeTime } = require("../common/util");
+const randomAvatar = require("../common/randomAvatar");
 /**
  * 用户注册
  * 1. 保存用户
@@ -21,7 +22,8 @@ const register = async ctx => {
       pwd,
       socketId,
       registerTime: time,
-      lastLoginTime: time
+      lastLoginTime: time,
+      avatar: randomAvatar()
     });
 
     // 判断用户是否已经存在
@@ -137,10 +139,13 @@ const getChat = async ctx => {
         ? await Group.findById(id)
             .populate({ path: "msgList", populate: { path: "from to" } })
             .populate("members")
-        : await Private.findById(id).populate({
-            path: "msgList",
-            populate: { path: "from to" }
-          });
+        : await Private.findById(id)
+            .populate("from")
+            .populate("to")
+            .populate({
+              path: "msgList",
+              populate: { path: "from to" }
+            });
     ctx.body = {
       ...back.success,
       res
