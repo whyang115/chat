@@ -4,8 +4,7 @@
           class="list"
           v-for="item in friends"
           :key = "item.id"
-          @click="getUserInfo"
-          data-id="item.id"
+          @click="getFriendInfo(item._id)"
         >
           <Avatar :src="item.avatar"></Avatar>
           <div class="content">
@@ -46,8 +45,15 @@ export default {
         this.$Message.error(error);
       }
     },
-    getFriendInfo() {
-      this.$store.dispatch("getFriendInfo", id);
+    async getFriendInfo(id) {
+      let { data } = await this.$store.dispatch("getUserInfo", id);
+      console.log(data);
+      let { returnCode, returnMessage, user } = data;
+      if (returnCode) {
+        this.$store.commit("showFriendInfo", { info: user });
+      } else {
+        this.$Message.error(returnMessage);
+      }
     }
   }
 };

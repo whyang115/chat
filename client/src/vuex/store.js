@@ -13,7 +13,11 @@ const store = new Vuex.Store({
     view: "chat",
     socket: {},
     user: {},
-    chat: {}
+    chat: {},
+    config: {
+      isOpenNotice: true
+    },
+    friendInfo: {}
   },
   mutations: {
     /**
@@ -84,6 +88,13 @@ const store = new Vuex.Store({
     },
     addFriend(state, { to }) {
       socket.emit("addFriend", { from: state.user, to });
+    },
+    changeNotice(state, status) {
+      state.config.isOpenNotice = status;
+      setItem("config", JSON.stringify(state.config));
+    },
+    showFriendInfo(state, { info }) {
+      state.friendInfo = info;
     }
   },
   actions: {
@@ -142,12 +153,15 @@ const store = new Vuex.Store({
      * 获取用户信息
      * @param {*} param0
      */
-    getUserInfo({ state }) {
+    getUserInfo({ state }, id) {
       return axios.get("/api/user", {
         params: {
-          id: state.user.id
+          id: id || state.user.id
         }
       });
+    },
+    updateUser({ state }, { name, gender, signature }) {
+      axios.post("/api/user", { id: state.user.id, name, gender, signature });
     },
     /**
      * 创建群聊

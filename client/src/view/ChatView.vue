@@ -23,12 +23,12 @@
       <chat-side></chat-side>
       <chat-message></chat-message>
     </section>
-    <section v-if="view === 'friends'" class="chat-box">
+    <section v-else-if="view === 'friends'" class="chat-box">
       <friend-list></friend-list>
       <friend-info></friend-info>
     </section>
     <section v-else class="chat-box">
-      <setting></setting>
+      <setting-view></setting-view>
     </section>
   </div>
 </template>
@@ -40,7 +40,7 @@ import ChatSide from "../components/ChatSide";
 import FriendList from "../components/FriendList";
 import FriendInfo from "../components/FriendInfo";
 import ChatMessage from "../components/ChatMessage";
-import Setting from "../components/Setting";
+import SettingView from "../components/SettingView";
 import { mapState } from "vuex";
 export default {
   components: {
@@ -50,7 +50,7 @@ export default {
     ChatMessage,
     FriendList,
     FriendInfo,
-    Setting
+    SettingView
   },
   data() {
     return {
@@ -94,6 +94,7 @@ export default {
     });
     this.$store.commit("readStorage", "user");
     this.$store.commit("readStorage", "chat");
+    this.$store.commit("readStorage", "config");
     this.$store.commit("joinGroup");
   },
   computed: {

@@ -1,28 +1,80 @@
 <template>
-  <div class="Wrap">
-    <div class="info" v-show="!!info.name">
-      <div class="bg"></div>
+  <div class="wrap">
+    <div class="friendInfo" v-show="!!friendInfo.name">
+      <div class="bg"><img :src="friendInfo.avatar"></div>
+        <p class="name">{{friendInfo.name}}</p>
+        <p class="signature"> {{friendInfo.signature}}</p>
       <div class="detail">
-        <p class="name">{{info.name}}</p>
-        <p class="signature">{{info.signature}}</p>
-        <p class="registerTime">{{info.registerTime}}</p>
-        <p class="lastLoginTime">{{info.lastLoginTime}}</p>
+        <p class="registerTime">注册时间: {{formatRegisterTime}}</p>
+        <p class="lastLoginTime">最后登录时间: {{formatLastLoginTime}}</p>
       </div>
-      <Button type="success">开始聊天</Button>
+      <Button type="success" long @click="chatTo(friendInfo.id)">开始聊天</Button>
     </div>
   </div>
 </template>
 
 <script>
+import { time } from "../common/time";
 import { mapState } from "vuex";
 export default {
   data() {
-    return {
-      info: {}
-    };
+    return {};
   },
-  computed: mapState({
-    friendInfo: state => state.friendInfo
-  })
+  computed: {
+    formatRegisterTime() {
+      return time.formatTime(this.friendInfo.registerTime);
+    },
+    formatLastLoginTime() {
+      return time.formatTime(this.friendInfo.lastLoginTime);
+    },
+    ...mapState({
+      friendInfo: state => state.friendInfo
+    })
+  },
+  methods: {
+    chatTo(id) {
+      this.change();
+    }
+  }
 };
 </script>
+
+<style lang="scss" scoped>
+.chat-box {
+  position: relative;
+}
+.wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  background-color: #fff;
+  height: 368px;
+  width: 300px;
+}
+.bg {
+  width: 300px;
+  img {
+    width: 100%;
+    height: 200px;
+  }
+}
+.name {
+  font-size: 24px;
+  margin-top: 0.8rem;
+}
+.signature {
+  font-size: 12px;
+  color: #333;
+}
+.detail {
+  padding: 1rem 2rem;
+  p {
+    text-align: left;
+    margin: 0.5rem 0;
+  }
+}
+</style>
+

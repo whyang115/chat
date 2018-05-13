@@ -174,6 +174,28 @@ const getUserInfo = async ctx => {
     console.log(error);
   }
 };
+const updateUser = async ctx => {
+  const { id, name, signature, gender } = ctx.request.body;
+  try {
+    let user = await User.findOne({ name });
+    if (user) {
+      ctx.body = {
+        ...back.error,
+        returnMessage: "用户名重复"
+      };
+    } else {
+      await User.findByIdAndUpdate(id, { name, signature, gender });
+      ctx.body = {
+        ...back.success
+      };
+    }
+  } catch (error) {
+    ctx.body = {
+      ...back.error,
+      returnMessage: "用户信息更新失败"
+    };
+  }
+};
 module.exports = {
   register,
   login,
@@ -181,5 +203,6 @@ module.exports = {
   getGroupList,
   getPrivateList,
   getChat,
-  getUserInfo
+  getUserInfo,
+  updateUser
 };

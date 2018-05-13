@@ -28,7 +28,6 @@ const avatarList = [
   "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-5-11/67947105.jpg",
   "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-21/93951459.jpg",
   "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-1/42784080.jpg",
-  "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-1/55101217.jpg",
   "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-1/21304024.jpg",
   "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-1/53755819.jpg",
   "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-1/1529598.jpg",
