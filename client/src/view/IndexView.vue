@@ -2,27 +2,27 @@
   <section :style="{backgroundImage: `url(${src})`}">
     <h1>人生若只如初见</h1>
     <h2>Life would be perfect if every moment is just like the first met</h2>
-	  <div class="loginWrap">
-    <p>{{timeJudge}}好,欢迎光临</p>
-    <Form ref="form" :model="form" :rules="rules" label-position="left">
-      <FormItem prop="user">
-        <Input type="text" v-model="form.name" autoComplete=false placeholder="用户名">
-          <Icon type="person" slot="prepend"/>
-        </Input>
-      </FormItem>
-      <FormItem prop="pwd">
-        <Input type="password" v-model="form.pwd" placeholder="请输入密码" >
-          <Icon type="locked" slot="prepend"/>
-        </Input>
-      </FormItem>
-      <FormItem>
-        <Button type="primary" long @click="handleClick('form')">{{this.view === "login" ? "登录":"注册"}}</Button>
-      </FormItem>
-      <FormItem>
-         <Button long @click="handleSwitchClick">{{this.view === "login" ?"没有账号? 去注册" :"已有账号? 去登录"}}</Button>
-      </FormItem>
-    </Form>
-  </div>
+    <div class="loginWrap">
+      <p>{{timeJudge}}好,欢迎光临</p>
+      <Form ref="form" :model="form" :rules="rules" label-position="left">
+        <FormItem prop="user">
+          <Input type="text" v-model="form.name" autoComplete=false placeholder="用户名">
+          <Icon type="person" slot="prepend" />
+          </Input>
+        </FormItem>
+        <FormItem prop="pwd">
+          <Input type="password" v-model="form.pwd" placeholder="请输入密码">
+          <Icon type="locked" slot="prepend" />
+          </Input>
+        </FormItem>
+        <FormItem>
+          <Button type="primary" long @click="handleClick('form')">{{this.view === "login" ? "登录":"注册"}}</Button>
+        </FormItem>
+        <FormItem>
+          <Button long @click="handleSwitchClick">{{this.view === "login" ?"没有账号? 去注册" :"已有账号? 去登录"}}</Button>
+        </FormItem>
+      </Form>
+    </div>
   </section>
 </template>
 <script>
@@ -68,20 +68,18 @@ export default {
         if (valid) {
           let { name, pwd } = this[ref];
           try {
-            let res = await this.$store.dispatch("userAction", {
+            let { data } = await this.$store.dispatch("userAction", {
               action: this.view,
               name,
               pwd
             });
-            let { returnCode, returnMessage, user, chat } = res.data;
-            if (returnCode === 1) {
+            let { returnCode, returnMessage, user, chat } = data;
+            if (returnCode) {
               this.$store.commit("loginSuccess", { user, chat });
-              // this.view === "register" &&
-              //   this.$store.commit("joinGroup", { chat });
               this.$router.push("/chat");
               this.$Message.success("登录成功,正在为您跳转");
             } else {
-              this.$Message.warning(returnMessage);
+              this.$Message.error(returnMessage);
             }
           } catch (error) {
             this.$Message.error(error);

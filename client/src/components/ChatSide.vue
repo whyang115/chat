@@ -58,7 +58,7 @@
     </header>
     <div class="control">
       <p @click="switchChatType('group')" :class="{active: 'group' === chat.type}">群组聊天</p>
-      <p @click="switchChatType('frivate')" :class="{active: 'private' === chat.type}">好友聊天</p>
+      <p @click="switchChatType('private')" :class="{active: 'private' === chat.type}">好友聊天</p>
     </div>
     <section v-if="chat.type === 'group'" class="chat">
       <group-list></group-list>

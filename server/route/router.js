@@ -1,7 +1,6 @@
 const Router = require("koa-router");
 const user = require("../controller/user.js");
 const group = require("../controller/group");
-const chat = require("../controller/chat");
 const fs = require("fs");
 const router = new Router({
   prefix: "/api"

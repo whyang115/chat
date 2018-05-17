@@ -1,17 +1,20 @@
 <template>
-  <div>
-    <ul class="privateWrap" v-if="privateList.length">
-      <li class="list" :class="{active: activeIndex === index}" v-for="(item,index) in privateList" :key="item.id" @click="swtichItem(item,index)">
-        <Avatar :src="item.to.avatar"></Avatar>
-        <div class="content">
-          <div class="name">{{item.to.name}}</div>
-          <div class="msg">{{getMsgCon(item)}}</div>
-        </div>
-        <p class="time">{{getMsgTime(item)}}</p>
-      </li>
-    </ul>
-    <div v-else class="empty">
-      当前没有聊天
+  <div class="wrap">
+    <Spin size="large" v-if="!isLoaded" fix></Spin>
+    <div class="privateWrap" v-show="isLoaded">
+      <ul v-if="privateList.length">
+        <li class="list" :class="{active: activeIndex === index}" v-for="(item,index) in privateList" :key="item.id" @click="swtichItem(item,index)">
+          <Avatar :src="item.to.avatar"></Avatar>
+          <div class="content">
+            <div class="name">{{item.to.name}}</div>
+            <div class="msg">{{getMsgCon(item)}}</div>
+          </div>
+          <p class="time">{{getMsgTime(item)}}</p>
+        </li>
+      </ul>
+      <div v-else class="empty">
+        当前没有聊天
+      </div>
     </div>
   </div>
 </template>
@@ -22,7 +25,8 @@ export default {
   data() {
     return {
       privateList: [],
-      activeIndex: 0
+      activeIndex: 0,
+      isLoaded: false
     };
   },
   created() {
@@ -34,6 +38,7 @@ export default {
       try {
         let { data } = await this.$store.dispatch("getPrivateList");
         let { returnCode, returnMessage, privateList } = data;
+        this.isLoaded = true;
         if (!privateList.length) return;
         if (returnCode) {
           this.privateList = privateList;
@@ -73,7 +78,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../common/common.scss";
-
+.wrap {
+  position: relative;
+}
 .privateWrap {
   margin-top: 1rem;
 }

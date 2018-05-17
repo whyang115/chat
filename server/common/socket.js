@@ -31,11 +31,12 @@ const initSocket = io => {
           }
         });
 
-        // group.msgList.push(msg.id);
-        // await group.save();
         group.members.forEach(item => {
-          socket.to(item.toString()).emit("chat", sendMsg);
+          socket
+            .to(item.toString())
+            .emit("groupChat", { groupId: group.id, msg: sendMsg });
         });
+        socket.emit("groupChat", { groupId: group.id, msg: sendMsg });
       } else {
         sendMsg = await Message.findById(msg.id)
           .populate({ path: "from" })
@@ -47,28 +48,17 @@ const initSocket = io => {
             msgList: msg.id
           }
         });
-
-        // private.msgList.push(msg.id);
-        // await private.save();
-        socket.to(to._id).emit("chat", sendMsg);
+        socket
+          .to(to._id)
+          .emit("privateChat", { privateId: private.id, msg: sendMsg });
+        socket.emit("privateChat", { privateId: private.id, msg: sendMsg });
       }
-      socket.emit("chat", sendMsg);
     });
 
     socket.on("joinSelf", ({ id }) => {
       socket.join(id);
     });
-    /**
-     * 加入群组
-     */
-    socket.on("joinGroup", async ({ id }) => {
-      // let { groupList } = await User.findById(id).populate("groupList");
-      // groupList.forEach(item => {
-      //   socket.join(item.id, () => {
-      //     console.log(`${id} joined ${item.id} success`);
-      //   });
-      // });
-    });
+
     // 添加好友
     socket.on("addFriend", async ({ from, to }) => {
       let { friends } = await User.findById(from.id);

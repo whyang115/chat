@@ -89,27 +89,6 @@ export default {
   },
   created() {
     this.getChat();
-    this.$socket.on("chat", data => {
-      Notification.requestPermission(status => {
-        if (
-          status !== "denied" &&
-          data.from._id !== this.$store.state.user.id
-        ) {
-          let n = new Notification(`${data.from.name}向您发来一条新消息`, {
-            body: data.content,
-            tag: data.from,
-            icon: data.from.avatar
-          });
-          n.onclick = () => {
-            n.close();
-          };
-          setTimeout(() => {
-            n.close();
-          }, 2000);
-        }
-        this.msgList.push(data);
-      });
-    });
   },
   mounted() {
     this.handleScroll();
@@ -174,7 +153,7 @@ export default {
         this.activeIndex = index;
         // this.msgList[index].isShowUserInfo = true;
       }
-      let top = $top - $scrollTop > 240 ? -124 : 50;
+      let top = $top - $scrollTop > 240 ? -124 : 48;
       this.userInfoStyle = { left: 0, top: top + "px" };
     },
     onUserInfoOut(msg, index) {

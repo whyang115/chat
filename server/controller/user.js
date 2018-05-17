@@ -85,6 +85,10 @@ const login = async ctx => {
   }
 };
 
+/**
+ * 获取用户的好友列表
+ * @param {*} ctx
+ */
 const getFriends = async ctx => {
   const { id } = ctx.query;
   try {
@@ -95,6 +99,10 @@ const getFriends = async ctx => {
   }
 };
 
+/**
+ * 获取用户的群组聊天
+ * @param {*} ctx
+ */
 const getGroupList = async ctx => {
   const { id } = ctx.query;
   try {
@@ -105,8 +113,10 @@ const getGroupList = async ctx => {
       },
       populate: {
         path: "msgList members",
+        select: { name: 1, to: 1, content: 1 },
         populate: {
-          path: "from to"
+          path: "from",
+          select: { name: 1 }
         }
       }
     });
@@ -118,6 +128,11 @@ const getGroupList = async ctx => {
     console.log(err);
   }
 };
+
+/**
+ * 获取用户的私聊列表
+ * @param {*} ctx
+ */
 const getPrivateList = async ctx => {
   const { id } = ctx.query;
   try {
@@ -139,6 +154,10 @@ const getPrivateList = async ctx => {
   }
 };
 
+/**
+ * 获取具体聊天内容
+ * @param {*} ctx
+ */
 const getChat = async ctx => {
   const { type, id } = ctx.query;
   try {
@@ -146,7 +165,7 @@ const getChat = async ctx => {
       type === "group"
         ? await Group.findById(id)
             .populate({ path: "msgList", populate: { path: "from to" } })
-            .populate("members")
+            .populate({ path: "members", select: { name: 1, avatar: 1 } })
         : await Private.findById(id)
             .populate("from")
             .populate("to")
@@ -163,10 +182,14 @@ const getChat = async ctx => {
   }
 };
 
+/**
+ * 获取用户信息
+ * @param {*} ctx
+ */
 const getUserInfo = async ctx => {
   let { id } = ctx.query;
   try {
-    let user = await User.findById(id);
+    let user = await User.findById(id, { name: 1, avatar: 1 });
     if (user) {
       ctx.body = {
         ...back.success,
@@ -182,6 +205,11 @@ const getUserInfo = async ctx => {
     console.log(error);
   }
 };
+
+/**
+ * 更新用户信息
+ * @param {*} ctx
+ */
 const updateUser = async ctx => {
   const { id, name, signature, gender } = ctx.request.body;
   try {
@@ -223,6 +251,10 @@ const getAllUser = async ctx => {
   }
 };
 
+/**
+ * 模糊查询所有的用户
+ * @param {*} ctx
+ */
 const getFuzzySearchUser = async ctx => {
   let { name } = ctx.query;
   try {

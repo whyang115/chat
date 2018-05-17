@@ -2,10 +2,7 @@
   <div class="chat-view">
     <chat-header></chat-header>
     <chat-menu></chat-menu>
-    <Modal
-      v-model="showAddFriend"
-      style="max-width: 300px"
-    >
+    <Modal v-model="showAddFriend" style="max-width: 300px">
       <p slot="header" style="text-align: center">
         <Icon type="person-add"></Icon>
         <span>{{`您有一个来自${from.name}的好友申请`}}</span>
@@ -18,7 +15,7 @@
         <Button type="error" @click="refuse">无情拒绝</Button>
         <Button type="success" @click="accept">欣然同意</Button>
       </p>
-   </Modal>
+    </Modal>
     <section v-if="view === 'chat'" class="chat-box">
       <chat-side></chat-side>
       <chat-message></chat-message>
@@ -63,6 +60,55 @@ export default {
     user: state => state.user
   }),
   created() {
+    this.$socket.on("groupChat", data => {
+      console.log(data);
+      this.$store.commit("changeChat", { type: "group", id: data.groupId });
+      Notification.requestPermission(status => {
+        if (
+          status !== "denied" &&
+          this.$store.state.config.isOpenNotice &&
+          data.msg.from._id !== this.$store.state.user.id
+        ) {
+          let n = new Notification(
+            `${data.msg.from.name}在${data.msg.to.name}发送一条新消息`,
+            {
+              body: data.msg.content,
+              tag: data.msg.from,
+              icon: data.msg.to.avatar
+            }
+          );
+          n.onclick = () => {
+            n.close();
+          };
+          setTimeout(() => {
+            n.close();
+          }, 2000);
+        }
+      });
+    });
+    this.$socket.on("privateChat", data => {
+      this.$store.commit("changeChat", { type: "private", id: data.privateId });
+      Notification.requestPermission(status => {
+        if (
+          status !== "denied" &&
+          this.$store.state.config.isOpenNotice &&
+          data.msg.from._id !== this.$store.state.user.id
+        ) {
+          let n = new Notification(`${data.msg.from.name}向您发来一条新消息`, {
+            body: data.msg.content,
+            tag: data.msg.from,
+            icon: data.msg.from.avatar
+          });
+          n.onclick = () => {
+            n.close();
+          };
+          setTimeout(() => {
+            n.close();
+          }, 2000);
+        }
+      });
+    });
+
     this.$socket.on("addFriend", ({ from }) => {
       this.from = from;
       this.showAddFriend = true;
@@ -111,7 +157,6 @@ export default {
         to: this.$store.state.user,
         isAccept: true
       });
-
       this.$Message.success("已同意");
     },
     refuse() {
