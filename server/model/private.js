@@ -14,7 +14,11 @@ const PrivateSchema = new Schema({
     type: Date,
     default: Date.now()
   },
-  msgList: [{ type: Schema.Types.ObjectId, ref: "Message" }]
+  msgList: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+  updateTime: {
+    type: Date,
+    default: Date.now()
+  }
 });
 const Private = mongoose.model("Private", PrivateSchema);
 module.exports = Private;

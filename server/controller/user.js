@@ -100,6 +100,9 @@ const getGroupList = async ctx => {
   try {
     let { groupList } = await User.findById(id).populate({
       path: "groupList",
+      options: {
+        sort: { updateTime: -1 }
+      },
       populate: {
         path: "msgList members",
         populate: {
@@ -120,7 +123,12 @@ const getPrivateList = async ctx => {
   try {
     let { privateList } = await User.findById(id).populate({
       path: "privateList",
-      populate: { path: "from to msgList" }
+      options: {
+        sort: { updateTime: -1 }
+      },
+      populate: {
+        path: "from to msgList"
+      }
     });
     ctx.body = {
       ...back.success,
@@ -196,6 +204,52 @@ const updateUser = async ctx => {
     };
   }
 };
+/**
+ * 获取所有的用户
+ * @param {*} ctx
+ */
+const getAllUser = async ctx => {
+  try {
+    let res = await User.find({}, { name: 1, avatar: 1, _id: 1 }).limit(20);
+    ctx.body = {
+      ...back.success,
+      res
+    };
+  } catch (error) {
+    ctx.body = {
+      ...back.error,
+      returnMessage: "获取用户列表失败"
+    };
+  }
+};
+
+const getFuzzySearchUser = async ctx => {
+  let { name } = ctx.query;
+  try {
+    let res = await User.find(
+      {
+        name: {
+          $regex: name,
+          $options: "i"
+        }
+      },
+      {
+        name: 1,
+        avatar: 1,
+        _id: 1
+      }
+    ).limit(20);
+    ctx.body = {
+      ...back.success,
+      res
+    };
+  } catch (error) {
+    ctx.body = {
+      ...back.error,
+      returnMessage: "查询失败"
+    };
+  }
+};
 module.exports = {
   register,
   login,
@@ -204,5 +258,7 @@ module.exports = {
   getPrivateList,
   getChat,
   getUserInfo,
-  updateUser
+  updateUser,
+  getAllUser,
+  getFuzzySearchUser
 };

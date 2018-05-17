@@ -7,14 +7,6 @@ const mongoose = require("mongoose");
 const initSocket = io => {
   // socket连接
   io.on("connection", socket => {
-    socket.on("test", async ({ to }) => {
-      const { members } = await Group.findById(to);
-      members.forEach(item => {
-        console.log(item.toString());
-        socket.to(item.toString()).emit("test", { test: "test" });
-      });
-      socket.emit("test", { test: "test" });
-    });
     /**
      * 更新用户socketId
      */
@@ -28,23 +20,37 @@ const initSocket = io => {
       let { to } = data;
       await msg.save();
       if (data.chat.type === "group") {
-        let group = await Group.findById(to);
         sendMsg = await Message.findById(msg.id)
           .populate({ path: "from" })
           .populate({ path: "to", model: "Group" });
-        group.msgList.push(msg.id);
-        await group.save();
+
+        let group = await Group.findByIdAndUpdate(to, {
+          updateTime: Date.now(),
+          $push: {
+            msgList: msg.id
+          }
+        });
+
+        // group.msgList.push(msg.id);
+        // await group.save();
         group.members.forEach(item => {
           socket.to(item.toString()).emit("chat", sendMsg);
         });
       } else {
-        let private = await Private.findById(data.chat.id);
         sendMsg = await Message.findById(msg.id)
           .populate({ path: "from" })
           .populate({ path: "to", model: "User" });
-        private.msgList.push(msg.id);
-        await private.save();
-        socket.to(to).emit("chat", sendMsg);
+
+        let private = await Private.findByIdAndUpdate(data.chat.id, {
+          updateTime: Date.now(),
+          $push: {
+            msgList: msg.id
+          }
+        });
+
+        // private.msgList.push(msg.id);
+        // await private.save();
+        socket.to(to._id).emit("chat", sendMsg);
       }
       socket.emit("chat", sendMsg);
     });
@@ -85,27 +91,36 @@ const initSocket = io => {
         let msg = new Message({
           content: "我们已经是好友了，开始聊天吧",
           sendTime: Date.now(),
-          from: fromUser._id,
-          to: toUser._id,
+          from: toUser._id,
+          to: fromUser._id,
           isRead: false
         });
-        let private = new Private({
+        let fromPrivate = new Private({
           from: fromUser._id,
           to: toUser._id,
           createTime: Date.now(),
           msgList: [msg._id]
         });
+        let toPrivate = new Private({
+          from: toUser._id,
+          to: fromUser._id,
+          createTime: Date.now(),
+          msgList: [msg._id]
+        });
 
-        fromUser.privateList.push(private._id);
-        toUser.privateList.push(private._id);
+        fromUser.privateList.push(fromPrivate._id);
+        toUser.privateList.push(toPrivate._id);
         await msg.save();
-        await private.save();
+        await fromPrivate.save();
+        await toPrivate.save();
         await fromUser.save();
         await toUser.save();
         socket
           .to(from.id)
-          .emit("addFriendSuccess", { from, to, id: private._id });
-        socket.to(to).emit("addFriendSuccess", { from, to, id: private._id });
+          .emit("addFriendSuccess", { from, to, id: fromPrivate._id });
+        socket
+          .to(to.id)
+          .emit("addFriendSuccess", { from, to, id: toPrivate._id });
       } else {
         socket.to(from.id).emit("addFriendFail", { from, to });
       }

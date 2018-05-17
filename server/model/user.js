@@ -44,7 +44,7 @@ const UserSchema = new Schema({
   },
   signature: {
     type: String,
-    default: "个人签名"
+    default: "此处为您的个性签名"
   },
   friends: [{ type: Schema.Types.ObjectId, ref: "User" }],
   groupList: [{ type: Schema.Types.ObjectId, ref: "Group" }],

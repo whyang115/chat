@@ -1,14 +1,14 @@
 <template>
-  <div class="wrap">
-    <div class="friendInfo" v-show="!!friendInfo.name">
+  <div class="wrap" v-show="!!friendInfo.name">
+    <div class="friendInfo">
       <div class="bg"><img :src="friendInfo.avatar"></div>
-        <p class="name">{{friendInfo.name}}</p>
-        <p class="signature"> {{friendInfo.signature}}</p>
+      <p class="name">{{friendInfo.name}}</p>
+      <p class="signature"> {{friendInfo.signature}}</p>
       <div class="detail">
         <p class="registerTime">注册时间: {{formatRegisterTime}}</p>
         <p class="lastLoginTime">最后登录时间: {{formatLastLoginTime}}</p>
       </div>
-      <Button type="success" long @click="chatTo(friendInfo.id)">开始聊天</Button>
+      <Button type="success" long @click="chatTo(friendInfo._id)">开始聊天</Button>
     </div>
   </div>
 </template>
@@ -33,7 +33,8 @@ export default {
   },
   methods: {
     chatTo(id) {
-      this.change();
+      this.$store.commit("changeView", { view: "chat" });
+      this.$store.commit("changeChat", { type: "private", id });
     }
   }
 };
@@ -51,11 +52,11 @@ export default {
   right: 0;
   margin: auto;
   background-color: #fff;
-  height: 368px;
-  width: 300px;
+  height: 400px;
+  width: 320px;
+  transform: translateX(150px);
 }
 .bg {
-  width: 300px;
   img {
     width: 100%;
     height: 200px;
@@ -71,6 +72,7 @@ export default {
 }
 .detail {
   padding: 1rem 2rem;
+  margin-bottom: 8px;
   p {
     text-align: left;
     margin: 0.5rem 0;

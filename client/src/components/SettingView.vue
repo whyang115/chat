@@ -2,9 +2,20 @@
   <section class="settingWrap">
     <div class="info">
       <ul>
-        <li><p>用户名: </p><Input v-model="info.name"></Input> </li>
-        <li><p>性别: </p><Select v-model="info.gender"><Option v-for="item in genders" :value="item.gender" :key="item.gender"></Option></Select></li>
-        <li><p>个性签名: </p><Input v-model="info.signature"></Input></li>
+        <li>
+          <p>用户名: </p>
+          <Input v-model="info.name"></Input>
+        </li>
+        <li>
+          <p>性别: </p>
+          <Select v-model="info.gender">
+            <Option v-for="item in genders" :value="item.gender" :key="item.gender" style="padding-left:15px"></Option>
+          </Select>
+        </li>
+        <li>
+          <p>个性签名: </p>
+          <Input v-model="info.signature"></Input>
+        </li>
         <li>注册时间: {{formatTime}}</li>
       </ul>
     </div>

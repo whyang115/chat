@@ -167,8 +167,31 @@ const store = new Vuex.Store({
      * 创建群聊
      * @param {*} param0
      */
-    createGroup({ commit }) {
-      return axios.post("/api/group");
+    createGroup({ state }, data) {
+      data.id = state.user.id;
+      return axios.post("/api/group", data);
+    },
+    /**
+     * 获取群组信息
+     * @param {*} state
+     * @param {*} param1
+     */
+    getGroup({ state }, { name }) {
+      return axios.get("/api/group", { params: { name } });
+    },
+    /**
+     * 获取所有用户
+     */
+    getAllUser() {
+      return axios.get("/api/allUser");
+    },
+    /**
+     * 模糊查询用户
+     * @param {*} state
+     * @param {*} param1
+     */
+    fuzzySearchUser({ state }, { name }) {
+      return axios.get("/api/fuzzyUser", { params: { name } });
     }
   }
 });

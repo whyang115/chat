@@ -1,6 +1,6 @@
 <template>
   <ul class="groupWrap">
-    <li class="list" v-for="group in groupList" :key="group.id">
+    <li class="list" :class="{active: activeIndex === index}" v-for="(group,index) in groupList" :key="group._id" @click="swtichItem(group,index)">
       <Avatar :src="group.avatar"></Avatar>
       <div class="content">
         <div class="name">{{group.name}}</div>
@@ -18,7 +18,8 @@ export default {
   name: "groupList",
   data() {
     return {
-      groupList: []
+      groupList: [],
+      activeIndex: 0
     };
   },
   created() {
@@ -43,6 +44,15 @@ export default {
         this.$Message.error(error);
       }
     },
+    swtichItem(item, index) {
+      if (index !== this.activeIndex) {
+        this.activeIndex = index;
+        this.$store.commit("changeChat", {
+          type: "group",
+          id: item._id
+        });
+      }
+    },
     getMsgCon(item) {
       if (item.msgList.length) {
         let len = item.msgList.length - 1;
@@ -61,6 +71,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../common/common.scss";
+.groupWrap {
+  margin-top: 1rem;
+}
 </style>
 
 

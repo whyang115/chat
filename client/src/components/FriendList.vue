@@ -13,7 +13,7 @@
           </div>
         </li>
       </ul>
-      <div v-else class="text">其实你可以更主动一些的</div>
+      <div v-else class="empty">其实你可以更主动一些的</div>
 </template>
 
 <script>
@@ -66,6 +66,16 @@ ul {
   max-width: 18rem;
   margin-left: 2rem;
   background-color: #fff;
+}
+.empty {
+  background: #fff;
+  margin-left: 40px;
+  min-width: 200px;
+  line-height: 200px;
+  writing-mode: tb;
+  letter-spacing: 5px;
+  font-size: 16px;
+  color: #f60;
 }
 </style>
 

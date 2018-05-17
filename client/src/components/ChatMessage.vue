@@ -1,33 +1,28 @@
 <template>
   <section class="chat-content">
     <section class="chat-room">
-      <h3 >{{chatName}}</h3>
+      <h3>{{chatName}}</h3>
       <ul ref="chatRoom">
-        <li
-          v-for="(msg,index) in msgList"
-          :key="index"
-          :class="msg.from._id === user.id ? 'self' : 'other'"
-          ref="msgItem"
-        >
+        <li v-for="(msg,index) in msgList" :key="index" :class="msg.from._id === user.id ? 'self' : 'other'" ref="msgItem">
           <div class="avatarBox" @mouseover="onUserInfoHover(msg,index)" @mouseout="onUserInfoOut(msg,index)">
-           <div class="userInfo" v-show="msg.isShowUserInfo" :style="userInfoStyle">
-            <Avatar :src="msg.from.avatar" size="large"></Avatar>
-            <div class="name">{{msg.from.name}}</div>
-            <div class="operation">
-              <div class="beFriend" @click="addFriend(msg,index)">加为好友</div>
+            <div class="userInfo" v-show="index === activeIndex" :style="userInfoStyle">
+              <Avatar :src="msg.from.avatar" size="large"></Avatar>
+              <div class="name">{{msg.from.name}}</div>
+              <div class="operation">
+                <div class="beFriend" @click="addFriend(msg,index)">加为好友</div>
+              </div>
             </div>
+            <Avatar :src="msg.from.avatar" />
           </div>
-           <Avatar :src="msg.from.avatar" />
-           </div>
           <p>{{msg.content}}</p>
         </li>
       </ul>
     </section>
     <section class="chat-input" @keydown.enter="sendChat">
-        <Icon type="android-happy" class="icon-emoij" @click.native="showEmoij = !showEmoij"></Icon>
-        <ul class="emoijWrap" v-show="showEmoij">
-          <li v-for="emoij in emoijs" :key="emoij" @click="addEmoij(emoij)">{{emoij}}</li>
-        </ul>
+      <Icon type="android-happy" class="icon-emoij" @click.native="showEmoij = !showEmoij"></Icon>
+      <ul class="emoijWrap" v-show="showEmoij">
+        <li v-for="emoij in emoijs" :key="emoij" @click="addEmoij(emoij)">{{emoij}}</li>
+      </ul>
       <input v-model=sendContent @change="inputChange" @focus="showEmoij = false" placeholder="请输入你想说的话 ~ ~" />
       <Icon type="android-send" class="icon-send" @click.native="sendChat"></Icon>
     </section>
@@ -42,6 +37,7 @@ export default {
     return {
       sendContent: "",
       userInfoStyle: { left: 0 },
+      activeIndex: null,
       chatInfo: {},
       showEmoij: false,
       emoijs: [
@@ -125,7 +121,6 @@ export default {
     chatName() {
       let { from, to } = this.chatInfo;
       let { id } = this.user;
-      console.log(this.chatInfo);
       if (this.chat.type === "private" && from) {
         if (from._id === id) {
           return this.chatInfo.to.name;
@@ -176,14 +171,14 @@ export default {
       let $height = this.$refs.chatRoom.offsetHeight;
       let $scrollTop = this.$refs.chatRoom.scrollTop;
       if (msg.from._id !== this.user.id) {
-        this.msgList[index].isShowUserInfo = true;
+        this.activeIndex = index;
+        // this.msgList[index].isShowUserInfo = true;
       }
-      let top = $top - $scrollTop > 240 ? -156 : 40;
+      let top = $top - $scrollTop > 240 ? -124 : 50;
       this.userInfoStyle = { left: 0, top: top + "px" };
     },
     onUserInfoOut(msg, index) {
-      console.log("out");
-      this.msgList[index].isShowUserInfo = false;
+      this.activeIndex = null;
     },
     addEmoij(emoij) {
       this.sendContent += emoij;
@@ -278,8 +273,7 @@ export default {
   li {
     display: flex;
     align-items: center;
-    margin: 1rem 0;
-    padding: 0 1rem;
+    padding: 1rem;
     position: relative;
 
     p {
@@ -380,5 +374,8 @@ export default {
     content: "";
     position: absolute;
   }
+}
+.avatarBox {
+  padding: 0 0.5rem;
 }
 </style>

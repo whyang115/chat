@@ -29,6 +29,9 @@ li.list {
   align-items: center;
   padding: 0.5rem 1rem;
   cursor: pointer;
+  &.active {
+    background-color: #d4eeff;
+  }
   .content {
     display: flex;
     flex-direction: column;

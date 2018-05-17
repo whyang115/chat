@@ -7,6 +7,10 @@ const { Schema } = mongoose;
  *   消息列表
  */
 const GroupSchema = new Schema({
+  creator: {
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  },
   name: {
     type: String,
     default: "一个聊天室"
@@ -24,7 +28,11 @@ const GroupSchema = new Schema({
     default: "群公告"
   },
   members: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  msgList: [{ type: Schema.Types.ObjectId, ref: "Message" }]
+  msgList: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+  updateTime: {
+    type: Date,
+    default: Date.now()
+  }
 });
 const Group = mongoose.model("Group", GroupSchema);
 module.exports = Group;

@@ -1,23 +1,32 @@
 <template>
   <ul>
-    <li v-for="(icon,index) in iconList" :key="index" :class="{active: icon.isActive}" @click="handleClick(index)">
-      <Icon :type=icon.id></Icon>
+    <li v-for="(icon,index) in iconList" :key="index" :class="{active: icon.id === view}" @click="handleClick(index)">
+      <Icon :type=icon.icon></Icon>
       <p>{{icon.text}}</p>
     </li>
   </ul>
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   data() {
     return {
       iconList: [
-        { id: "chatboxes", isActive: true, text: "聊天列表" },
-        { id: "person-stalker", isActive: false, text: "好友列表" },
-        { id: "gear-b", isActive: false, text: "设置" }
+        { id: "chat", icon: "chatboxes", isActive: true, text: "聊天列表" },
+        {
+          id: "friends",
+          icon: "person-stalker",
+          isActive: false,
+          text: "好友列表"
+        },
+        { id: "setting", icon: "gear-b", isActive: false, text: "设置" }
       ]
     };
   },
+  computed: mapState({
+    view: state => state.view
+  }),
   methods: {
     handleClick(index) {
       let index2Route = { 0: "chat", 1: "friends", 2: "setting" };
