@@ -92,7 +92,16 @@ const login = async ctx => {
 const getFriends = async ctx => {
   const { id } = ctx.query;
   try {
-    let { friends } = await User.findById(id).populate("friends");
+    let { friends } = await User.findById(id).populate({
+      path: "friends",
+      select: {
+        avatar: 1,
+        name: 1,
+        lastLoginTime: 1,
+        registerTime: 1
+      },
+      populate: { path: "privateList" }
+    });
     ctx.body = { ...back.success, friends };
   } catch (error) {
     console.log(error);

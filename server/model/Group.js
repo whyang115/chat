@@ -29,6 +29,9 @@ const GroupSchema = new Schema({
   },
   members: [{ type: Schema.Types.ObjectId, ref: "User" }],
   msgList: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+  users: {
+    type: Number
+  },
   updateTime: {
     type: Date,
     default: Date.now()

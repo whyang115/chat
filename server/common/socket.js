@@ -13,6 +13,25 @@ const initSocket = io => {
     socket.on("updateSocket", async ({ userId, socketId }) => {
       await User.findByIdAndUpdate(userId, { socketId });
     });
+    socket.on("newUser", () => {
+     let group= await Group.findOneAndUpdate({ name: "全体群" }, {
+        $inc: {
+          users:1
+        }
+      })
+      socket.broadcast.emit("newUser",{num:group.users })
+      socket.emit("newUser",{num: group.users})
+    })
+    /**
+     * 与好友私聊
+     */
+    socket.on("chatToFriend", async ({ from, to }) => {
+      let { id } =
+        (await Private.findOne({ from, to })) ||
+        (await Private.findOne({ from: to, to: from }));
+      socket.emit("chatToFriend", { id });
+      socket.to(to).emit("chatToFriend", { id });
+    });
     // 聊天;
     socket.on("chat", async data => {
       let msg = new Message(data);
@@ -85,32 +104,24 @@ const initSocket = io => {
           to: fromUser._id,
           isRead: false
         });
-        let fromPrivate = new Private({
+        let private = new Private({
           from: fromUser._id,
           to: toUser._id,
           createTime: Date.now(),
           msgList: [msg._id]
         });
-        let toPrivate = new Private({
-          from: toUser._id,
-          to: fromUser._id,
-          createTime: Date.now(),
-          msgList: [msg._id]
-        });
-
-        fromUser.privateList.push(fromPrivate._id);
-        toUser.privateList.push(toPrivate._id);
+        fromUser.privateList.push(private._id);
+        toUser.privateList.push(private._id);
         await msg.save();
-        await fromPrivate.save();
-        await toPrivate.save();
+        await private.save();
         await fromUser.save();
         await toUser.save();
         socket
           .to(from.id)
-          .emit("addFriendSuccess", { from, to, id: fromPrivate._id });
+          .emit("addFriendSuccess", { from, to, id: private._id });
         socket
           .to(to.id)
-          .emit("addFriendSuccess", { from, to, id: toPrivate._id });
+          .emit("addFriendSuccess", { from, to, id: private._id });
       } else {
         socket.to(from.id).emit("addFriendFail", { from, to });
       }

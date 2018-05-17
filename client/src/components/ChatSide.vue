@@ -103,7 +103,7 @@ export default {
         item => item._id !== this.$store.state.user.id
       );
     },
-    ...mapState({ chat: state => state.chat })
+    ...mapState({ chat: state => state.chat, user: state => state.user })
   },
   methods: {
     async showCreateGroup() {
@@ -150,17 +150,18 @@ export default {
       this.visible = false;
       this.$store.commit("addFriend", { to: item._id });
     },
-    createGroup() {
+    async createGroup() {
       if (!this.groupName) {
         this.$Message.error("群组名不能为空");
         return;
       }
       if (!this.isLegalGroup) return;
-      this.$store.dispatch("createGroup", {
+      let { data } = await this.$store.dispatch("createGroup", {
         groupName: this.groupName,
         groupAnnouncement: this.groupAnnouncement,
         selectedUser: this.selectedUser
       });
+      this.$store.commit("changeChat", { type: "group", id: data.id });
       this.isShowCreateGroup = false;
     },
     cancel() {

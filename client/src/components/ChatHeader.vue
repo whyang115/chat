@@ -2,7 +2,8 @@
   <header>
     <p class="welcome">欢迎进入聊天室</p>
     <section>
-      <Avatar size="large" :src = user.avatar></Avatar>
+      <p>在线人数:{{userNum}}</p>
+      <Avatar size="large" :src=user.avatar></Avatar>
       <p class="userName">{{user.name}}</p>
     </section>
   </header>
@@ -14,7 +15,14 @@ import { getItem } from "../common/storage";
 import { isEmptyObj } from "../common/util";
 export default {
   data() {
-    return {};
+    return {
+      userNum: 1
+    };
+  },
+  created() {
+    this.$socket.on("newUser", ({ num }) => {
+      this.userNum = num;
+    });
   },
   computed: mapState({
     user: state => state.user

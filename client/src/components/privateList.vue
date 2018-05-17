@@ -6,7 +6,7 @@
         <li class="list" :class="{active: activeIndex === index}" v-for="(item,index) in privateList" :key="item.id" @click="swtichItem(item,index)">
           <Avatar :src="item.to.avatar"></Avatar>
           <div class="content">
-            <div class="name">{{item.to.name}}</div>
+            <div class="name">{{getPrivateName(item)}}</div>
             <div class="msg">{{getMsgCon(item)}}</div>
           </div>
           <p class="time">{{getMsgTime(item)}}</p>
@@ -21,6 +21,7 @@
 
 <script>
 import moment from "moment";
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -32,7 +33,7 @@ export default {
   created() {
     this.getPrivateList();
   },
-
+  computed: mapState({ user: state => state.user }),
   methods: {
     async getPrivateList() {
       try {
@@ -59,6 +60,9 @@ export default {
           id: item._id
         });
       }
+    },
+    getPrivateName(item) {
+      return item.from._id !== this.user.id ? item.from.name : item.to.name;
     },
     getMsgCon(item) {
       if (item.msgList.length) {

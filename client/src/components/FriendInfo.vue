@@ -28,13 +28,13 @@ export default {
       return time.formatTime(this.friendInfo.lastLoginTime);
     },
     ...mapState({
-      friendInfo: state => state.friendInfo
+      friendInfo: state => state.friendInfo,
+      user: state => state.user
     })
   },
   methods: {
     chatTo(id) {
-      this.$store.commit("changeView", { view: "chat" });
-      this.$store.commit("changeChat", { type: "private", id });
+      this.$socket.emit("chatToFriend", { from: this.user.id, to: id });
     }
   }
 };

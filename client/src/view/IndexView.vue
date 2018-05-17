@@ -76,6 +76,9 @@ export default {
             let { returnCode, returnMessage, user, chat } = data;
             if (returnCode) {
               this.$store.commit("loginSuccess", { user, chat });
+              if (this.view === "register") {
+                this.$socket.emit("newUser");
+              }
               this.$router.push("/chat");
               this.$Message.success("登录成功,正在为您跳转");
             } else {

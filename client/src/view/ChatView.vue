@@ -138,6 +138,12 @@ export default {
         duration: 2
       });
     });
+
+    this.$socket.on("chatToFriend", ({ id }) => {
+      console.log(id);
+      this.$store.commit("changeChat", { type: "private", id });
+      this.$store.commit("changeView", { view: "chat" });
+    });
     this.$store.commit("readStorage", "user");
     this.$store.commit("readStorage", "chat");
     this.$store.commit("readStorage", "config");

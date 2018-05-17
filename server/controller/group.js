@@ -51,7 +51,7 @@ const createGroup = async ctx => {
         }
       });
     }
-    ctx.body = { ...Back.success };
+    ctx.body = { ...Back.success, id: groupId };
   } catch (error) {
     ctx.body = {
       ...Back.error,

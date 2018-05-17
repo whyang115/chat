@@ -134,9 +134,18 @@ export default {
         this.$Message.error("发送内容不能为空");
         return;
       }
+      let to;
+      if (this.chat.type === "private") {
+        to =
+          this.chatInfo.to._id === this.user.id
+            ? this.chatInfo.from
+            : this.chatInfo.to;
+      } else {
+        to = this.chatInfo._id;
+      }
       this.$store.commit("sendChat", {
         content: this.sendContent,
-        to: this.chat.type === "group" ? this.chatInfo._id : this.chatInfo.to
+        to
       });
 
       setTimeout(() => {
