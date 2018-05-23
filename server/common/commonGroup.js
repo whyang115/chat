@@ -6,7 +6,7 @@ const initCommonGroup = async () => {
     return;
   }
   try {
-    let commonGroup = new Group({ name: "全体群", users: 0 });
+    let commonGroup = new Group({ name: "全体群" });
     await commonGroup.save();
   } catch (error) {
     console.log(error);

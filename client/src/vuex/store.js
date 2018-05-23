@@ -17,7 +17,13 @@ const store = new Vuex.Store({
     config: {
       isOpenNotice: true
     },
-    friendInfo: {}
+    friendInfo: {},
+    onlineUsers: []
+  },
+  getters: {
+    onlineUserNum: state => {
+      return state.onlineUsers.length;
+    }
   },
   mutations: {
     /**
@@ -63,6 +69,7 @@ const store = new Vuex.Store({
         sendTime: new Date()
       });
     },
+
     /**
      * 切换view 聊天、好友列表、设置页面
      * @param {*} state
@@ -95,6 +102,9 @@ const store = new Vuex.Store({
     },
     showFriendInfo(state, { info }) {
       state.friendInfo = info;
+    },
+    userChange(state, { onlineUsers }) {
+      state.onlineUsers = onlineUsers;
     }
   },
   actions: {
@@ -200,7 +210,13 @@ const store = new Vuex.Store({
  * 浏览器重连时 更新用户socketId
  */
 socket.on("connect", () => {
-  socket.emit("joinSelf", { id: store.state.user.id });
+  if (store.state.user.id) {
+    socket.emit("joinSelf", { id: store.state.user.id });
+    socket.emit("getOnlineUsers");
+  }
 });
 
+window.onunload = () => {
+  socket.emit("disConnect", { id: store.state.user.id });
+};
 export default store;

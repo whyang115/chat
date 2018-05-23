@@ -3,6 +3,7 @@ const Private = require("../model/private");
 const Group = require("../model/group.js");
 const User = require("../model/user");
 const mongoose = require("mongoose");
+let onlineUsers = [];
 // socket连接
 const initSocket = io => {
   // socket连接
@@ -13,15 +14,6 @@ const initSocket = io => {
     socket.on("updateSocket", async ({ userId, socketId }) => {
       await User.findByIdAndUpdate(userId, { socketId });
     });
-    socket.on("newUser", () => {
-     let group= await Group.findOneAndUpdate({ name: "全体群" }, {
-        $inc: {
-          users:1
-        }
-      })
-      socket.broadcast.emit("newUser",{num:group.users })
-      socket.emit("newUser",{num: group.users})
-    })
     /**
      * 与好友私聊
      */
@@ -76,6 +68,20 @@ const initSocket = io => {
 
     socket.on("joinSelf", ({ id }) => {
       socket.join(id);
+      if (!onlineUsers.includes(id)) {
+        onlineUsers.push(id);
+      }
+      io.sockets.emit("userChange", onlineUsers);
+    });
+
+    socket.on("getOnlineUsers", () => {
+      socket.emit("userChange", onlineUsers);
+    });
+
+    socket.on("disConnect", ({ id }) => {
+      let index = onlineUsers.indexOf(id);
+      onlineUsers.splice(index, 1);
+      io.sockets.emit("userChange", onlineUsers);
     });
 
     // 添加好友

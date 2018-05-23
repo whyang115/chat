@@ -1,8 +1,8 @@
 <template>
   <header>
     <p class="welcome">欢迎进入聊天室</p>
+    <p class="onlineUsers">在线人数:{{onlineUserNum}}</p>
     <section>
-      <p>在线人数:{{userNum}}</p>
       <Avatar size="large" :src=user.avatar></Avatar>
       <p class="userName">{{user.name}}</p>
     </section>
@@ -15,18 +15,21 @@ import { getItem } from "../common/storage";
 import { isEmptyObj } from "../common/util";
 export default {
   data() {
-    return {
-      userNum: 1
-    };
+    return {};
   },
   created() {
-    this.$socket.on("newUser", ({ num }) => {
-      this.userNum = num;
+    this.$socket.on("userChange", data => {
+      this.$store.commit("userChange", { onlineUsers: data });
     });
   },
-  computed: mapState({
-    user: state => state.user
-  })
+  computed: {
+    onlineUserNum() {
+      return this.$store.getters.onlineUserNum;
+    },
+    ...mapState({
+      user: state => state.user
+    })
+  }
 };
 </script>
 
@@ -47,6 +50,11 @@ p.welcome {
   color: #fff;
   flex-grow: 9;
   text-align: left;
+}
+.onlineUsers {
+  margin-right: 1rem;
+  font-size: 1.2rem;
+  color: #fff;
 }
 section {
   display: flex;
