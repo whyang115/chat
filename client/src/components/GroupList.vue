@@ -62,8 +62,7 @@ export default {
     getMsgTime(item) {
       if (item.msgList.length) {
         let len = item.msgList.length - 1;
-        let time = item.msgList[len].createTime;
-        console.log(moment("20170101").fromNow(true));
+        let time = item.msgList[len].sendTime;
         return `${moment(time).fromNow(true)}前`;
       }
     }

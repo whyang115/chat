@@ -42,7 +42,7 @@ export default {
           { type: "string", min: 6, message: "密码不能小于６位" }
         ]
       },
-      src: "http://onlzci6oa.bkt.clouddn.com/18-3-13/85686249.jpg"
+      src: "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-646674.jpg"
     };
   },
   created() {

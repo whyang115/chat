@@ -45,8 +45,6 @@ export default {
   },
   computed: {
     formatTime() {
-      console.log(this.info.registerTime);
-      console.log(time.formatTime(this.info.registerTime));
       return time.formatTime(this.info.registerTime);
     },
     ...mapState({

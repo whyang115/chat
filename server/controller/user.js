@@ -122,7 +122,7 @@ const getGroupList = async ctx => {
       },
       populate: {
         path: "msgList members",
-        select: { name: 1, to: 1, content: 1 },
+        select: { name: 1, to: 1, sendTime: 1, content: 1 },
         populate: {
           path: "from",
           select: { name: 1 }
@@ -198,7 +198,13 @@ const getChat = async ctx => {
 const getUserInfo = async ctx => {
   let { id } = ctx.query;
   try {
-    let user = await User.findById(id, { name: 1, avatar: 1 });
+    let user = await User.findById(id, {
+      name: 1,
+      avatar: 1,
+      gender: 1,
+      signature: 1,
+      registerTime: 1
+    });
     if (user) {
       ctx.body = {
         ...back.success,
