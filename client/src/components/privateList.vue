@@ -31,6 +31,14 @@ export default {
     };
   },
   created() {
+    this.$socket.on("privateChat", data => {
+      let { privateId, msg } = data;
+      this.privateList.forEach(item => {
+        if (item._id === privateId) {
+          item.msgList.push(msg);
+        }
+      });
+    });
     this.getPrivateList();
   },
   computed: mapState({ user: state => state.user }),

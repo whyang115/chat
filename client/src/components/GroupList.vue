@@ -23,8 +23,13 @@ export default {
     };
   },
   created() {
-    this.$socket.on("chat", data => {
-      console.log(data);
+    this.$socket.on("groupChat", data => {
+      let { groupId, msg } = data;
+      this.groupList.forEach(item => {
+        if (item._id === groupId) {
+          item.msgList.push(msg);
+        }
+      });
     });
     this.getGroupList();
   },

@@ -1,7 +1,7 @@
 <template>
   <header>
     <p class="welcome">欢迎进入聊天室</p>
-    <p class="onlineUsers">在线人数:{{onlineUserNum}}</p>
+    <p class="onlineUsers">在线人数: {{onlineUserNum}}</p>
     <section>
       <Avatar size="large" :src=user.avatar></Avatar>
       <p class="userName">{{user.name}}</p>

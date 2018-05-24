@@ -1,7 +1,8 @@
 <template>
   <section :style="{backgroundImage: `url(${src})`}">
-    <h1>人生若只如初见</h1>
-    <h2>Life would be perfect if every moment is just like the first met</h2>
+    <!-- <h1>人生若只如初见</h1>
+    <h2>Life would be perfect if every moment is just like the first met</h2> -->
+    <h1>基于Node.js的聊天室设计与实现</h1>
     <div class="loginWrap">
       <p>{{timeJudge}}好,欢迎光临</p>
       <Form ref="form" :model="form" :rules="rules" label-position="left">
@@ -42,7 +43,8 @@ export default {
           { type: "string", min: 6, message: "密码不能小于６位" }
         ]
       },
-      src: "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-646674.jpg"
+      src:
+        "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-646674.jpg"
     };
   },
   created() {
@@ -107,7 +109,7 @@ section {
   background-size: cover;
   & > h1,
   & > h2 {
-    margin-top: 40px;
+    margin-top: 100px;
     color: #fff;
   }
   & > h2 {
@@ -126,5 +128,10 @@ section {
   height: 320px;
   padding: 10px 50px;
   background: rgba(255, 255, 255, 0.5);
+  p {
+    margin: 18px;
+    font-size: 24px;
+    color: #0093ff;
+  }
 }
 </style>

@@ -185,8 +185,10 @@ export default {
     chat() {
       this.getChat();
     },
-    msgList() {
-      this.handleScroll();
+    chatInfo() {
+      setTimeout(() => {
+        this.handleScroll();
+      }, 0);
     }
   }
 };

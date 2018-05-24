@@ -61,7 +61,6 @@ export default {
   }),
   created() {
     this.$socket.on("groupChat", data => {
-      console.log(data);
       this.$store.commit("changeChat", { type: "group", id: data.groupId });
       Notification.requestPermission(status => {
         if (
@@ -140,7 +139,6 @@ export default {
     });
 
     this.$socket.on("chatToFriend", ({ id }) => {
-      console.log(id);
       this.$store.commit("changeChat", { type: "private", id });
       this.$store.commit("changeView", { view: "chat" });
     });

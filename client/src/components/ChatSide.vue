@@ -37,12 +37,6 @@
         <Input v-model="searchContent" @on-change="searchUser" placeholder="搜索好友并添加">
         <Button slot="append" icon="ios-search"></Button>
         </Input>
-        <!-- <Select v-model="selectedFriend" filterable multiple>
-          <Option v-for="item in searchedUser" :value="item._id" :key="item._id">
-            <Avatar :src="item.avatar"></Avatar>
-            <span class="name">{{item.name}}</span>
-          </Option>
-        </Select> -->
         <Dropdown trigger="custom" :visible="visible" class="dropdownStyle">
           <DropdownMenu slot="list">
             <DropdownItem v-for="(item,index) in selectedUserExpectedSelf" :key="index">
@@ -50,7 +44,6 @@
                 <Avatar :src="item.avatar"></Avatar>
                 <span class="name">{{item.name}}</span>
               </p>
-
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
