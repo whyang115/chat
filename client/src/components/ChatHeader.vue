@@ -42,7 +42,6 @@ header {
   align-items: center;
   padding: 0 2rem 0 3rem;
   background-color: $main;
-  box-shadow: 0px 2px 5px 10px #ccc;
   z-index: 99;
 }
 p.welcome {

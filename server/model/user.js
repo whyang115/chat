@@ -31,7 +31,7 @@ const UserSchema = new Schema({
   },
   lastLoginTime: {
     type: Date,
-    required: true
+    default: Date.now()
   },
   avatar: {
     type: String,

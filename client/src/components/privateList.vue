@@ -4,7 +4,7 @@
     <div class="privateWrap" v-show="isLoaded">
       <ul v-if="privateList.length">
         <li class="list" :class="{active: activeIndex === index}" v-for="(item,index) in privateList" :key="item.id" @click="swtichItem(item,index)">
-          <Avatar :src="item.to.avatar"></Avatar>
+          <Avatar :src="getAvatar(item)"></Avatar>
           <div class="content">
             <div class="name">{{getPrivateName(item)}}</div>
             <div class="msg">{{getMsgCon(item)}}</div>
@@ -68,6 +68,11 @@ export default {
           id: item._id
         });
       }
+    },
+    getAvatar(item) {
+      return item.from.avatar !== this.user.avatar
+        ? item.from.avatar
+        : item.to.avatar;
     },
     getPrivateName(item) {
       return item.from._id !== this.user.id ? item.from.name : item.to.name;

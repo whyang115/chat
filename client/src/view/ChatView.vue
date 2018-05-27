@@ -107,6 +107,9 @@ export default {
         }
       });
     });
+    this.$socket.on("inviteGroup", id => {
+      this.$store.commit("changeChat", { type: "group", id });
+    });
 
     this.$socket.on("addFriend", ({ from }) => {
       this.from = from;
@@ -181,7 +184,7 @@ export default {
 @import "../common/common.scss";
 .chat-view {
   height: 100%;
-  background-color: #c7ced4;
+  background-color: #c8d6ea;
   overflow: hidden;
 }
 

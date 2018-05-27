@@ -17,7 +17,8 @@ const GroupSchema = new Schema({
   },
   avatar: {
     type: String,
-    default: "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-4-1/54370195.jpg"
+    default:
+      "http://tuku-image.oss-cn-beijing.aliyuncs.com/18-5-27/81935988.jpg"
   },
   createTime: {
     type: Date,

@@ -132,6 +132,12 @@ const initSocket = io => {
         socket.to(from.id).emit("addFriendFail", { from, to });
       }
     });
+    socket.on("welcomeGroup", data => {
+      let { users, id } = data;
+      users.forEach(item => {
+        socket.to(item).emit("inviteGroup", id);
+      });
+    });
     socket.on("disconnection", () => {
       console.log("socket is disconnected");
     });

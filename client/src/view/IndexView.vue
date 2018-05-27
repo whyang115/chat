@@ -7,20 +7,20 @@
       <p>{{timeJudge}}好,欢迎光临</p>
       <Form ref="form" :model="form" :rules="rules" label-position="left">
         <FormItem prop="user">
-          <Input type="text" v-model="form.name" autoComplete=false placeholder="用户名">
+          <Input type="text" id="name" v-model="form.name" autoComplete=false placeholder="用户名">
           <Icon type="person" slot="prepend" />
           </Input>
         </FormItem>
         <FormItem prop="pwd">
-          <Input type="password" v-model="form.pwd" placeholder="请输入密码">
+          <Input type="password" id="pwd" v-model="form.pwd" placeholder="请输入密码">
           <Icon type="locked" slot="prepend" />
           </Input>
         </FormItem>
         <FormItem>
-          <Button type="primary" long @click="handleClick('form')">{{this.view === "login" ? "登录":"注册"}}</Button>
+          <Button type="primary" id="action" long @click="handleClick('form')">{{this.view === "login" ? "登录":"注册"}}</Button>
         </FormItem>
         <FormItem>
-          <Button long @click="handleSwitchClick">{{this.view === "login" ?"没有账号? 去注册" :"已有账号? 去登录"}}</Button>
+          <Button :id=this.view long @click="handleSwitchClick">{{this.view === "login" ?"没有账号? 去注册" :"已有账号? 去登录"}}</Button>
         </FormItem>
       </Form>
     </div>
@@ -131,7 +131,7 @@ section {
   p {
     margin: 18px;
     font-size: 24px;
-    color: #0093ff;
+    color: #009fff;
   }
 }
 </style>

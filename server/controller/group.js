@@ -38,7 +38,8 @@ const createGroup = async ctx => {
     name: groupName,
     announcement: groupAnnouncement,
     members: selectedUser,
-    avatar: randomAvatar
+    avatar: randomAvatar,
+    updateTime: Date.now()
   });
   try {
     let res = await group.save();

@@ -18,12 +18,12 @@
         </li>
       </ul>
     </section>
+    <ul class="emoijWrap" v-show="showEmoij">
+      <li v-for="emoij in emoijs" :key="emoij" @click="addEmoij(emoij)">{{emoij}}</li>
+    </ul>
     <section class="chat-input" @keydown.enter="sendChat">
       <Icon type="android-happy" class="icon-emoij" @click.native="showEmoij = !showEmoij"></Icon>
-      <ul class="emoijWrap" v-show="showEmoij">
-        <li v-for="emoij in emoijs" :key="emoij" @click="addEmoij(emoij)">{{emoij}}</li>
-      </ul>
-      <input v-model=sendContent @change="inputChange" @focus="showEmoij = false" placeholder="请输入你想说的话 ~ ~" />
+      <input v-model=sendContent @focus="showEmoij = false" placeholder="请输入你想说的话 ~ ~" />
       <Icon type="android-send" class="icon-send" @click.native="sendChat"></Icon>
     </section>
   </section>
@@ -154,13 +154,14 @@ export default {
       this.sendContent = "";
     },
     onUserInfoHover(msg, index) {
+      console.log(this.chat);
+      if (this.chat.type === "private") return;
       let $target = this.$refs.msgItem[index];
       let $top = $target.offsetTop;
       let $height = this.$refs.chatRoom.offsetHeight;
       let $scrollTop = this.$refs.chatRoom.scrollTop;
       if (msg.from._id !== this.user.id) {
         this.activeIndex = index;
-        // this.msgList[index].isShowUserInfo = true;
       }
       let top = $top - $scrollTop > 240 ? -124 : 48;
       this.userInfoStyle = { left: 0, top: top + "px" };
@@ -171,7 +172,6 @@ export default {
     addEmoij(emoij) {
       this.sendContent += emoij;
     },
-    inputChange() {},
     addFriend(msg, index) {
       this.$store.commit("addFriend", { to: msg.from._id });
       this.onUserInfoOut(msg, index);
@@ -197,6 +197,7 @@ export default {
 <style lang="scss" scoped>
 @import "../common/common.scss";
 .chat-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -346,7 +347,7 @@ export default {
 
 .emoijWrap {
   position: absolute;
-  top: -145px;
+  bottom: 48px;
   left: 0;
   max-width: 40rem;
   display: flex;
