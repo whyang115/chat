@@ -134,6 +134,7 @@ export default {
       });
     });
     this.$socket.on("addFriendFail", ({ from, to }) => {
+      console.log("fail");
       this.$Notice.destroy();
       this.$Notice.error({
         title: `${from.name} 拒绝您的添加好友请求`,

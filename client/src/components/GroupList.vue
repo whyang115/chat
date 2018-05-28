@@ -31,6 +31,9 @@ export default {
         }
       });
     });
+    this.$socket.on("groupCreated", id => {
+      this.getGroupList();
+    });
     this.getGroupList();
   },
   methods: {

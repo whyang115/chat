@@ -8,7 +8,10 @@
       </div>
     </li>
   </ul>
-  <div v-else class="empty">其实你可以更主动一些的</div>
+  <div v-else class="empty">
+    <p>这里空空如也</p>
+    <img src="../assets/empty.png"></img>
+  </div>
 </template>
 
 <script>
@@ -62,14 +65,13 @@ ul {
   background-color: #fff;
 }
 .empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background: #fff;
   margin-left: 40px;
   min-width: 200px;
-  line-height: 200px;
-  writing-mode: tb;
-  letter-spacing: 5px;
-  font-size: 16px;
-  color: #f60;
 }
 </style>
 

@@ -125,9 +125,7 @@ const initSocket = io => {
         socket
           .to(from.id)
           .emit("addFriendSuccess", { from, to, id: private._id });
-        socket
-          .to(to.id)
-          .emit("addFriendSuccess", { from, to, id: private._id });
+        socket.emit("addFriendSuccess", { from, to, id: private._id });
       } else {
         socket.to(from.id).emit("addFriendFail", { from, to });
       }
@@ -137,6 +135,7 @@ const initSocket = io => {
       users.forEach(item => {
         socket.to(item).emit("inviteGroup", id);
       });
+      socket.emit("groupCreated");
     });
     socket.on("disconnection", () => {
       console.log("socket is disconnected");

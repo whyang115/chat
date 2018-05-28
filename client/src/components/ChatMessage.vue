@@ -154,7 +154,6 @@ export default {
       this.sendContent = "";
     },
     onUserInfoHover(msg, index) {
-      console.log(this.chat);
       if (this.chat.type === "private") return;
       let $target = this.$refs.msgItem[index];
       let $top = $target.offsetTop;

@@ -1,5 +1,5 @@
 <template>
-  <section :style="{backgroundImage: `url(${src})`}">
+  <section>
     <!-- <h1>人生若只如初见</h1>
     <h2>Life would be perfect if every moment is just like the first met</h2> -->
     <h1>基于Node.js的聊天室设计与实现</h1>
@@ -42,9 +42,7 @@ export default {
           { required: true, message: "请填写密码" },
           { type: "string", min: 6, message: "密码不能小于６位" }
         ]
-      },
-      src:
-        "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-646674.jpg"
+      }
     };
   },
   created() {
@@ -105,7 +103,7 @@ export default {
 section {
   height: 100%;
   overflow: hidden;
-  background-repeat: no-repeat;
+  background: url("../assets/bg.jpg") no-repeat;
   background-size: cover;
   & > h1,
   & > h2 {
