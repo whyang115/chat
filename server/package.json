@@ -16,6 +16,7 @@
   "author": "whyang115@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "koa": "^2.5.0",
     "koa-body": "^2.5.0",
     "koa-bodyparser": "^4.2.0",
