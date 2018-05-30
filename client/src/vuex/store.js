@@ -4,7 +4,7 @@ import axios from "axios";
 import { setItem, getItem } from "../common/storage";
 Vue.use(Vuex);
 
-const socket = window.io.connect("http://localhost:1105");
+const socket = window.io.connect();
 
 Vue.prototype.$socket = socket;
 
