@@ -105,6 +105,9 @@ const store = new Vuex.Store({
     },
     userChange(state, { onlineUsers }) {
       state.onlineUsers = onlineUsers;
+    },
+    updateUser(state, user) {
+      state.user = user;
     }
   },
   actions: {

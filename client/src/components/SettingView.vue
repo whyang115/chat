@@ -64,6 +64,10 @@ export default {
       let { returnCode, returnMessage, user } = data;
       if (returnCode) {
         this.info = user;
+        this.$store.commit("updateUser", user);
+        this.$Message.success("修改成功");
+      } else {
+        this.$Message.error(returnMessage);
       }
     }
   }
