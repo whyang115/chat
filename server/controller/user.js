@@ -236,7 +236,7 @@ const updateUser = async ctx => {
   const { id, name, signature, gender } = ctx.request.body;
   try {
     let user = await User.findOne({ name });
-    if (user) {
+    if (user && user.name !== name) {
       ctx.body = {
         ...back.error,
         returnMessage: "用户名重复"

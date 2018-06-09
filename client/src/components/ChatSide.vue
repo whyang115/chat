@@ -35,7 +35,7 @@
       </div>
       <div v-else>
         <Input v-model="searchContent" @on-change="searchUser" placeholder="搜索好友并添加">
-        <Button slot="append" icon="ios-search"></Button>
+        <Button slot="append" icon="ios-search" @click="searchedUser"></Button>
         </Input>
         <Dropdown trigger="custom" :visible="visible" class="dropdownStyle">
           <DropdownMenu slot="list">
@@ -141,6 +141,7 @@ export default {
     },
     addFriend(item) {
       this.visible = false;
+      this.searchContent = "";
       this.$store.commit("addFriend", { to: item._id });
     },
     async createGroup() {
