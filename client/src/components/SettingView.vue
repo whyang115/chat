@@ -55,17 +55,26 @@ export default {
     changeNotice(status) {
       this.$store.commit("changeNotice", status);
     },
-    updateUser() {
+    async updateUser() {
       let { name, gender, signature } = this.info;
-      this.$store.dispatch("updateUser", { name, signature, gender });
+      let { data } = await this.$store.dispatch("updateUser", {
+        name,
+        signature,
+        gender
+      });
+      let { returnCode, returnMessage, user } = data;
+      if (returnCode) {
+        this.$Message.success("修改成功");
+        this.$store.commit("updateUser", user.name);
+      } else {
+        this.$Message.error(returnMessage);
+      }
     },
     async getUserInfo() {
       let { data } = await this.$store.dispatch("getUserInfo");
       let { returnCode, returnMessage, user } = data;
       if (returnCode) {
         this.info = user;
-        this.$store.commit("updateUser", user);
-        this.$Message.success("修改成功");
       } else {
         this.$Message.error(returnMessage);
       }

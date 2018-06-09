@@ -242,9 +242,22 @@ const updateUser = async ctx => {
         returnMessage: "用户名重复"
       };
     } else {
-      await User.findByIdAndUpdate(id, { name, signature, gender });
+      await User.findByIdAndUpdate(id, {
+        name,
+        signature,
+        gender
+      });
+      let user = await User.findById(id, {
+        name: 1,
+        avatar: 1,
+        gender: 1,
+        signature: 1,
+        registerTime: 1
+      });
+
       ctx.body = {
-        ...back.success
+        ...back.success,
+        user
       };
     }
   } catch (error) {

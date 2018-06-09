@@ -106,8 +106,8 @@ const store = new Vuex.Store({
     userChange(state, { onlineUsers }) {
       state.onlineUsers = onlineUsers;
     },
-    updateUser(state, user) {
-      state.user = user;
+    updateUser(state, name) {
+      state.user.name = name;
     }
   },
   actions: {
@@ -174,7 +174,12 @@ const store = new Vuex.Store({
       });
     },
     updateUser({ state }, { name, gender, signature }) {
-      axios.post("/api/user", { id: state.user.id, name, gender, signature });
+      return axios.post("/api/user", {
+        id: state.user.id,
+        name,
+        gender,
+        signature
+      });
     },
     /**
      * 创建群聊
