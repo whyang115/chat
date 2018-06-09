@@ -14,6 +14,12 @@ const randomAvatar = require("../common/randomAvatar");
 const register = async ctx => {
   const { name, pwd, time, socketId } = ctx.request.body;
   try {
+    // 判断用户是否已经存在
+    let res = await User.findOne({ name });
+    if (res) {
+      ctx.body = back.userExist;
+      return;
+    }
     /**
      * 新建用户
      */
@@ -25,13 +31,6 @@ const register = async ctx => {
       lastLoginTime: time,
       avatar: randomAvatar()
     });
-
-    // 判断用户是否已经存在
-    let res = await User.findOne({ name });
-    if (res) {
-      ctx.body = back.userExist;
-      return;
-    }
     let { id, avatar } = user;
     let group = await Group.findOne({ name: "全体群" });
 
@@ -61,6 +60,11 @@ const register = async ctx => {
 const login = async ctx => {
   const { name, pwd, time, socketId } = ctx.request.body;
   try {
+    let user = await User.findOne({ name });
+    if (!user) {
+      ctx.body = back.userUnExist;
+      return;
+    }
     let res = await User.findOneAndUpdate(
       { name, pwd },
       { lastLoginTime: localeTime(time), socketId }
@@ -78,7 +82,10 @@ const login = async ctx => {
         }
       };
     } else {
-      ctx.body = back.userUnExist;
+      ctx.body = {
+        ...back.error,
+        returnMessage: "用户名和密码不匹配"
+      };
     }
   } catch (error) {
     ctx.throw(500, error);

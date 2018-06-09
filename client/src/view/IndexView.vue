@@ -17,7 +17,7 @@
           </Input>
         </FormItem>
         <FormItem>
-          <Button type="primary" id="action" long @click="handleClick('form')">{{this.view === "login" ? "登录":"注册"}}</Button>
+          <Button type="primary" id="action" long @keyup.enter="handleClick('form')" @click="handleClick('form')">{{this.view === "login" ? "登录":"注册"}}</Button>
         </FormItem>
         <FormItem>
           <Button :id=this.view long @click="handleSwitchClick">{{this.view === "login" ?"没有账号? 去注册" :"已有账号? 去登录"}}</Button>
